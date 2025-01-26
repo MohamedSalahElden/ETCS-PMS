@@ -1,0 +1,39 @@
+.dropzone {
+  border: 2px dashed #d3d3d3; /* Highlighted border color */
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  background-color: #ffffff;
+  color: #333;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.dropzone.dragover {
+  background-color: #ffe5e9;
+  border-color: #ff4d5a;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.browse {
+  color: #bf1e2e;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.file-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.icon-label {
+    cursor: pointer; /* Makes the icon look clickable */
+  }
+  
+
+  

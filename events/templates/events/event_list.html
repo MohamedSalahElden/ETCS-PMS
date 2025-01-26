@@ -1,0 +1,226 @@
+
+
+{% extends "base_for_project.html" %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'custom/styles/timeline.css' %}">
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>
+
+<style>
+  .timeline-body{
+    width: auto;
+    margin-left : 0px;
+  }
+  .timeline-time{
+    padding : 0;
+  }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4 d-flex justify-content-between align-items-center">
+      Events
+      <div class="dropdown">
+        <button  class="btn btn-link"  type="button"  id="dropdownMenuButton"  data-bs-toggle="dropdown"  aria-expanded="false">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li>
+            <a class="dropdown-item" href="{% url 'events:create_event' project.id %}" type="button">
+              Add Event
+            </a>
+          </li>
+        </ul>
+      </div>
+    </h5>
+    <div class="card">
+      <div class="card-body">
+
+        {% comment %} time line start {% endcomment %}
+
+
+        <div class="card-body">
+
+          <div class="mb-3">
+            <button 
+              type="button" 
+              class="btn w-100 " 
+              onclick="showFloatingCard()"
+            >
+            <a href="{% url 'events:create_event' project.id %}" type="button">
+              + Add Event
+            </a>
+            </button>
+          </div>
+          
+          
+      
+          <div>
+            <!-- add the time line here -->
+          
+            <div class="container">
+              <ul class="timeline">
+                
+                {% for event in events %}
+                <li>
+                  <div class="timeline-time">
+                    <span class="time">{{ event.event_date|date:"d M" }}</span>  <!-- For the time in 24-hour format (e.g., 2:05) -->
+                    <span class="date">{{ event.event_date|date:"Y" }} | {{ event.event_date|date:"H:i" }}</span>   <!-- For the date in day and month format (e.g., 25 Jan) -->
+                  </div>
+                  
+                  <div class="timeline-icon">
+                    <a href="javascript:;">&nbsp;</a>
+                  </div>
+                  
+                  <div class="timeline-body">
+                    <div class="timeline-header" style="   display: flex;   justify-content: space-between;   align-items: center; ">
+                      <div style="display: flex; align-items: center">
+                        
+                        
+                        {% if event.event_type == "MEETING"    %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-users-group"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" /><path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M17 10h2a2 2 0 0 1 2 2v1" /><path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M3 13v-1a2 2 0 0 1 2 -2h2" /></svg> {% endif %}
+                        {% if event.event_type == "RECEIVE"    %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-package-import"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12v9" /><path d="M12 12l-8 -4.5" /><path d="M22 18h-7" /><path d="M18 15l-3 3l3 3" /></svg> {% endif %}
+                        {% if event.event_type == "DELIVER"    %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-mail-forward"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 18h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5" /><path d="M3 6l9 6l9 -6" /><path d="M15 18h6" /><path d="M18 15l3 3l-3 3" /></svg> {% endif %}
+                        {% if event.event_type == "MILESTONE"  %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-flag-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13.767 15.12a4.983 4.983 0 0 1 -1.767 -1.12a5 5 0 0 0 -7 0v-9a5 5 0 0 1 7 0a5 5 0 0 0 7 0v8.5" /><path d="M5 21v-7" /><path d="M15 19l2 2l4 -4" /></svg> {% endif %}
+                        {% if event.event_type == "KICKOFF"    %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rocket"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" /><path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" /><path d="M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg> {% endif %}
+                        {% if event.event_type == "UPDATE"     %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rotate-clockwise"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4.05 11a8 8 0 1 1 .5 4m-.5 5v-5h5" /></svg> {% endif %}
+                        {% if event.event_type == "INCIDENT"   %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-alert-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg> {% endif %}
+                        {% if event.event_type == "RETURN"     %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-package-export"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12v9" /><path d="M12 12l-8 -4.5" /><path d="M15 18h7" /><path d="M19 15l3 3l-3 3" /></svg> {% endif %}
+                        {% if event.event_type == "REPORT"     %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-export"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M11.5 21h-4.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v5m-5 6h7m-3 -3l3 3l-3 3" /></svg> {% endif %}
+                        {% if event.event_type == "FEEDBACK"   %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-message-reply"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /><path d="M11 8l-3 3l3 3" /><path d="M16 11h-8" /></svg> {% endif %}
+                        {% if event.event_type == "OTHER"      %} <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 8a3 3 0 0 1 0 6" /><path d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5" /><path d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8" /></svg> {% endif %}
+
+                        
+                        <span class="username" style="margin-left: 15px;"> {{ event.title }} </span>
+                      </div>
+
+                      
+                      <div style="display: flex; gap: 10px">
+                        <a href="{% url 'events:modify_event' project.id event.id %}" class="edit-icon">
+                          <i class="ti ti-edit"></i>
+                        </a>
+                        <div style="position: relative; display: inline-block" data-id="{{ event.title }}">
+                          <a
+                            href="javascript:void(0);"
+                            class="delete-icon"
+                            onclick="toggleDropdown(this)"
+                          >
+                            <i class="ti ti-dots"></i>
+                          </a>
+                          <div
+                            class="dropdown-menu"
+                            style="
+                              display: none;
+                              position: absolute;
+                              right: 0;
+                              background: #fff;
+                            "
+                          >
+                            <a
+                              href="{% url 'events:delete_event' project.id event.id %}"
+                              class="dropdown-item"
+                              >Delete</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="timeline-content">
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-event"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2z" /></svg></strong></div>
+                        <div class="col-md-9">{{ event.event_date|date:"l d M Y" }} at {{ event.event_date|date:"g:i a" }}</div>
+                      </div>
+                      {% if event.description %}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-menu-deep"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6h16" /><path d="M7 12h13" /><path d="M10 18h10" /></svg></strong></div>
+                        <div class="col-md-9">{{ event.description }}</div>
+                      </div>
+                      {%endif%}
+                      {% if event.description %}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-note"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 20l7 -7" /><path d="M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7" /></svg></strong></div>
+                        <div class="col-md-9">{{ event.note }}</div>
+                      </div>
+                      {%endif%}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg></strong></div>
+                        <div class="col-md-9">{{ event.action_creator }}</div>
+                      </div>
+
+                      {% if event.team_participants.all %}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong> <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 511.000000 437.000000" preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,437.000000) scale(0.100000,-0.100000)" fill="#bf1e2e" stroke="none"> <path d="M3790 4093 c-110 -18 -262 -64 -345 -106 -58 -29 -195 -113 -205 -126 -3 -4 -31 -28 -63 -55 -174 -147 -356 -438 -446 -711 -59 -183 -85 -302 -111 -517 -66 -548 30 -1251 225 -1639 79 -159 135 -240 230 -334 208 -207 394 -294 629 -296 179 -2 333 69 487 222 26 26 55 59 64 73 30 45 26 49 190 -177 l49 -67 201 2 200 3 3 988 2 987 -535 0 -535 0 0 -328 0 -328 123 1 c67 0 130 -1 140 -3 15 -4 17 -21 17 -176 -1 -272 -40 -404 -135 -451 -83 -40 -179 -18 -266 62 -49 46 -69 75 -109 157 -106 223 -141 423 -146 836 -4 416 33 631 152 875 85 176 192 278 348 333 62 22 87 26 201 26 115 0 139 -4 210 -28 98 -33 205 -90 312 -167 45 -33 84 -59 87 -59 3 0 6 177 6 394 l0 395 -27 21 c-39 31 -194 104 -283 134 -68 23 -109 32 -240 56 -45 9 -382 11 -430 3z"/> <path d="M180 2205 l0 -1845 1040 0 1040 0 1 30 c0 17 1 167 1 335 0 168 -1 323 -1 345 l-1 40 -612 2 -613 3 -3 398 -2 397 575 0 575 0 0 355 0 355 -575 0 -575 0 2 343 3 342 614 5 614 5 -1 315 c0 173 -1 339 -1 367 l-1 53 -1040 0 -1040 -1 0 -1844z"/> </g> </svg></strong></div>
+                        <div class="col-md-9">
+                          <ul>
+                            {% for participant in event.team_participants.all %}
+                              <li>{{ participant.username }}</li> <!-- Change 'username' to any attribute of your user model -->
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                      {%endif%}
+
+                      {% if event.external_participants|parse_json %}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-users-group"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" /><path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M17 10h2a2 2 0 0 1 2 2v1" /><path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M3 13v-1a2 2 0 0 1 2 -2h2" /></svg></strong></div>
+                        <div class="col-md-9">
+                          <ul>
+                            {% for participant in event.external_participants|parse_json %}
+                                <li>{{ participant.value }}</li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                      {%endif%}
+                      
+                      <!-- Event Files Section (if applicable) -->
+                      {% if event.related_files.all %}
+                      <div class="row mb-3">
+                        <div class="col-md-1"><strong><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-files"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 3v4a1 1 0 0 0 1 1h4" /><path d="M18 17h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h4l5 5v7a2 2 0 0 1 -2 2z" /><path d="M16 17v2a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h2" /></svg></strong></div>
+                        <div class="col-md-9">
+                          {% for file in event.related_files.all %}
+                            <a href="{% url 'download_file' project.id file.id %}">{{ file.file.name|truncatewords:5 }}</a>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      {% endif %}
+                
+
+                    </div>
+
+                    
+
+                  </div>
+                  
+                </li>
+                {% endfor %}
+                
+              </ul>
+            </div>
+          </div>
+          
+          
+        
+        </div>
+
+
+      {% comment %} time line end {% endcomment %}
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'custom/scripts/timeline.js' %}"></script>
+{% endblock %}

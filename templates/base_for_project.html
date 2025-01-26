@@ -1,0 +1,64 @@
+{% load static %}
+{% load tasks_filter %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Web App{% endblock %}</title>
+    <link  href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.1/dist/css/bootstrap.min.css"  rel="stylesheet"/>
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/logo.svg' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
+    <link rel="stylesheet" href="{% static 'custom/styles/header.css' %}">
+    {% comment %} <link  rel="stylesheet" type="text/css" href="{% static 'images/favicon.png' %}"/> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'custom/styles/base.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+
+   
+  </head>
+
+  <body>
+    <!--  Body Wrapper -->
+    <div
+      class="page-wrapper"
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin6"
+      data-sidebartype="full"
+      data-sidebar-position="fixed"
+      data-header-position="fixed"
+    >
+      <!-- Sidebar Start -->
+      {% include 'side_bar.html' %}
+      
+
+
+      <!--  Main wrapper -->
+      <div class="body-wrapper">
+      
+        <!--  Header Start -->
+        {% include 'header.html' %}
+      
+        <!--  body -->
+        {% block content %}{% endblock %}
+      
+      </div>
+    </div>
+
+
+    {% block additional %}{% endblock %}
+    
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'custom/scripts/base.js' %}"></script>
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'assets/js/sidebarmenu.js'%}"></script>
+    <script src="{% static 'assets/js/app.min.js'%}"></script>
+    <script src="{% static 'assets/libs/simplebar/dist/simplebar.js'%}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+  </body>
+</html>

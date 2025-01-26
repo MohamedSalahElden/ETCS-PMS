@@ -1,0 +1,63 @@
+{% extends "base_for_project.html" %}
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4">Profile</h5>
+    <div class="card">
+      <div class="card-body">
+        <!-- User Information Section -->
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Title:</strong></div>
+          <div class="col-md-9">{{ writeup.title }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Content</strong></div>
+          <div class="col-md-9">{{ writeup.content }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Creator:</strong></div>
+          <div class="col-md-9">{{ writeup.creator }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Employer Code:</strong></div>
+          <div class="col-md-9">{{ profile.employer_code }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Editors</strong></div>
+          <div class="col-md-9">
+            <p>{% for editor in writeup.editors.all %}{{ editor }}, {% endfor %}</p>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Last updated:</strong></div>
+          <div class="col-md-9">
+              {{ writeup.updated_at }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Evidence Files: </strong></div>
+          <div class="col-md-9">
+            <ul>
+                {% for file in writeup.evidence_files.all %}
+                    <li>{{ file.name }}</li>
+                {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Button -->
+    <div class="d-flex justify-content-end mt-4">
+        <a href="{% url 'writeups:edit_writeup' writeup.project.id writeup.id %}">Edit Writeup</a>
+        <form action="{% url 'writeups:delete_writeup' writeup.project.id writeup.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Delete Writeup</button>
+        </form>
+    </div>
+  </div>
+
+ 
+   
+  </div>
+{% endblock %}

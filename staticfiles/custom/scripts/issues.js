@@ -1,0 +1,87 @@
+function toggleRow(element) {
+    // Find all expandable rows in the table
+    const allExpandableRows = document.querySelectorAll('tr.expandable');
+
+    // Find the next sibling row of the clicked element
+    const expandableRow = element.closest('tr').nextElementSibling;
+
+    // Loop through all expandable rows to hide them
+    allExpandableRows.forEach(row => {
+      if (row !== expandableRow) {
+        row.style.display = "none"; // Hide other rows
+      }
+    });
+
+    // Toggle visibility of the targeted row
+    if (expandableRow.style.display === "none" || !expandableRow.style.display) {
+      expandableRow.style.display = "table-row";
+    } else {
+      expandableRow.style.display = "none";
+    }
+  }
+
+
+  function edit_issue(issue) {
+    const url = `/edit_issue?issue=${issue}`;
+    $.ajax({
+      url: url,
+      type: "GET",
+      success: function (response) {
+        // Handle the success response here
+        console.log("Folder opened successfully:", response.message);
+        // Optionally, show a success message to the user
+      },
+      error: function (xhr, status, error) {
+        // Handle the error response here
+        console.error("Error opening folder:", xhr.responseJSON.message || "An error occurred");
+        // Optionally, show an error message to the user
+      },
+    });
+  }
+
+
+  
+function deleteIssue(button) {
+    var issue_id = button.getAttribute('data-id'); // Get the task ID
+    var xhr = new XMLHttpRequest(); // Create a new XMLHttpRequest object
+    xhr.open("POST", "/delete_issue", true); // Set up the request method and URL
+    xhr.setRequestHeader("Content-Type", "application/json"); // Set content type as JSON
+
+    // Set up the data to be sent
+    var data = JSON.stringify({ id: issue_id });
+
+    // Set up the response handler
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Reload the page if deletion is successful
+            window.location.reload();
+        } else {
+            // Optionally, show an error message if the deletion fails
+            alert("Error: Could not delete the task.");
+        }
+    };
+
+    // Send the request with the data
+    xhr.send(data);
+}
+
+
+ 
+
+
+function showFloatingCard() {
+  // Check if templates length is 0
+  if (templates.length === 0) {
+    window.location.href = "/add_issue"; // Redirect to /add_issue
+    return; // Stop further execution
+  }
+
+  // Otherwise, show the floating card and overlay
+  document.getElementById("floatingCard").style.display = "block";
+  document.getElementById("overlay").style.display = "block";
+}
+
+function hideFloatingCard() {
+  document.getElementById("floatingCard").style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+}

@@ -1,0 +1,453 @@
+
+
+{% extends "base_for_project.html" %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+
+<!-- Include Tagify's CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.css">
+
+<!-- Include Tagify's JS -->
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.min.js"></script>
+<link rel="stylesheet" href="{% static 'custom/styles/files.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+<style>
+  .file-item {
+    transition: background-color 0.3s ease; /* Smooth transition for highlighting */
+    padding-top: 10px; /* Add padding to the file item */
+    padding-left: 10px; /* Add padding to the file item */
+    padding-right: 10px; /* Add padding to the file item */
+    padding-bottom: 1px; /* Add padding to the file item */
+}
+
+.file-item:hover {
+    background-color:rgb(250, 221, 221); /* Change to a light color when hovered */
+    cursor: pointer; /* Change the cursor to indicate interactivity */
+}
+
+.delete_icon:hover {
+    color: red; /* Set the color to red */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4 d-flex justify-content-between align-items-center">
+      Files
+      <div class="dropdown">
+        <button  class="btn btn-link"  type="button"  id="dropdownMenuButton"  data-bs-toggle="dropdown"  aria-expanded="false">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li>
+            <a class="dropdown-item" href="{% url 'files:add_file' project.id %}" type="button">
+              Add file
+            </a>
+          </li>
+        </ul>
+      </div>
+    </h5>
+    <input type="hidden" id="projectId" value="{{ project.id }}" />
+    <div class="card">
+        <div class="card-body" >
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                 <!-- Search Bar -->
+                 <div class="mb-3">
+                  <input type="text" id="searchBar" oninput="filterFiles()" placeholder="Search files..." class="form-control"  value="{{ project_name }}" >
+                </div>
+                <div class="file-list">
+                  {% for file in files %}
+                    <div class="file-item" id="file_item_id{{file.id}}" data-file-name="{{ file.name|lower }}">
+                      <!-- File Header -->
+                      <div class="file-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center">
+                          
+                          <h6 class="fw-semibold mb-1 cursor-pointer" onclick="toggleRow(this)">{{ file.name }}</h6>
+                          
+                        </div>
+                    
+                        <!-- Actions -->
+
+                        <div style="display: flex; gap: 10px; align-items: center;">
+
+                          <span class="badge category" style="background-color: rgb(71, 71, 71) ; border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;">
+                            {{ file.file_type }}
+                          </span>
+                        
+                          <span class="badge" style="background-color: 
+                            {% if file.confidentiality_level == 'high'%} 
+                            rgb(185, 34, 0)
+                            {% elif file.confidentiality_level == 'medium'%} 
+                            rgb(201, 181, 0)
+                            {% elif file.confidentiality_level == 'low'%} 
+                            rgb(29, 199, 43)
+                            {%endif%}
+                          ; border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;">
+                          {{ file.confidentiality_level|slice:":1"|capfirst }}
+                          </span>
+
+                          
+                          <!-- Download Icon -->
+                          <a href="{{ file.file.url }}" class="edit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/>
+                              <path d="M7 11l5 5l5 -5"/>
+                              <path d="M12 4l0 12"/>
+                            </svg>
+                          </a>
+                    
+                          {% if user == file.uploaded_by or user == file.project.owner or user.is_staff  %}
+                          <!-- Edit Icon -->
+                          <a href="{% url 'files:edit_file' file.id %}" class="edit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
+                              <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
+                              <path d="M16 5l3 3"/>
+                            </svg>
+                          </a>
+                          
+
+                          
+
+                          <div style="height: 20px; width: 2px; background-color: gray;"></div>
+
+                    
+                          <!-- Delete Icon -->
+                          <a href="javascript:void(0)" onclick="deletefile('{{file.id}}')" class="delete_icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M4 7l16 0"/>
+                              <path d="M10 11l0 6"/>
+                              <path d="M14 11l0 6"/>
+                              <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
+                              <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
+                            </svg>
+                          </a>
+                          {%endif%}
+                        </div>
+                      </div>
+                  
+                      <!-- File Description -->
+                      <p class="fw-normal file-description" style="font-size: 10px;">
+                        {%if file.file_status == 'completed' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-checks">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M7 12l5 5l10 -10" />
+                          <path d="M2 12l5 5m5 -5l5 -5" />
+                        </svg>
+                        {%endif%}
+                        {{ file.description }}
+
+                      </p>
+                      <p class="fw-normal file-type" style="font-size: 10px;" hidden>{{ file.file_type }}</p>
+                      <p class="fw-normal file-status" style="font-size: 10px;" hidden>{{ file.file_status }}</p>
+                      <p class="fw-normal file-confidentiality-level" style="font-size: 10px;" hidden>{{ file.confidentiality_level }}</p>
+                      
+                      <!-- Collapsible Section for Details -->
+                      <div class="file-details" style="display: none;">
+                        <div>
+                          <h6>Path</h6>
+                          <p>{{ file.name }}</p>
+                        </div>
+                        <div>
+                          <h6>File Type</h6>
+                          <p>{{ file.name }}</p>
+                        </div>
+                        <div>
+                          <h6>File Length</h6>
+                          <p>{{ file.name }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+                  
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-4">
+              <div id="progress-container" style=" display: none; width: 100%; margin-top: 10px;">
+                <div class="progress" style="height: 10px; background-color: #d3d3d3; border-radius: 8px;">
+                  <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%; background-color: #ff0000;"></div>
+                </div>
+                <div id="progress-text" style="text-align: center; margin-top: 5px; font-size: 14px; font-weight: bold; color: #333;">0%</div>
+              </div>
+              <div id="dropzone" class="dropzone">             
+                <div class="mb-4">
+                  <div class="icon-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-upload"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /> <path d="M7 9l5 -5l5 5" /> <path d="M12 4l0 12" /></svg>
+                  </div>                          
+                </div> 
+                <p>Drop files here</p>
+                <input type="file" id="fileInput" multiple hidden />
+              </div>
+            </div>
+
+          </div>
+      
+    </div>
+  </div>
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+{% comment %} <script src="{% static 'custom/scripts/files.js' %}"></script> {% endcomment %}
+
+<script>
+  // Run the function on page load to apply the color to all badges
+  document.addEventListener('DOMContentLoaded', function () {
+    // Run the function once the DOM is fully loaded
+    setColorForBadges();
+  });
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const fileInfo = document.getElementById("fileInfo");
+
+  // Highlight dropzone on drag events
+  dropzone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+  });
+
+
+
+  // Handle file selection through browse
+  dropzone.addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", () => {
+    const projectId = document.getElementById("projectId").value;
+    const files = fileInput.files;  // Get all the selected files
+  
+    if (files.length > 0) {
+      // Show progress bar
+      document.getElementById("progress-container").style.display = "block";
+  
+      // Upload each file
+      Array.from(files).forEach((file) => {
+        upload_file(file);
+      });
+      {% comment %} window.location.href = `/files/project/${projectId}/files/`; {% endcomment %}
+    }
+ });
+
+  if(document.getElementById("add_file_dropdown_botton")){
+    // Handle file selection through browse
+    add_file_dropdown_botton.addEventListener("click", () => {
+      fileInput.click();
+    });
+  }
+
+
+  function getCSRFToken() {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+      if (cookie.startsWith("csrftoken=")) {
+        return cookie.split("=")[1];
+      }
+    }
+    return null;
+  }
+
+
+
+
+  dropzone.addEventListener("drop", (event) => {
+    const projectId = document.getElementById("projectId").value;
+    event.preventDefault();
+    dropzone.classList.remove("dragover");
+  
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      // Show progress bar
+      document.getElementById("progress-container").style.display = "block";
+  
+      // Upload each file
+      Array.from(files).forEach((file) => {
+        upload_file(file);
+      });
+      window.location.href = `/files/project/${projectId}/files/`;
+    }
+  });
+  
+  function upload_file(file) {
+    const projectId = document.getElementById("projectId").value; // Get the project ID
+    const formData = new FormData(); // Create a FormData object
+
+    // Set form fields with exact names, using empty or default values for missing data
+    formData.append("name", file.name || ""); // Set the file name
+    formData.append("description", file.type || ""); // Set a default description (file.type used here, but you can change it)
+    formData.append("file", file); // Attach the file
+
+    // Add default values for the optional fields
+    formData.append("file_type", "other"); // Default file type if not provided
+    formData.append("file_status", "pending"); // Default file status
+    formData.append("confidentiality_level", "medium"); // Default confidentiality level
+    formData.append("tags", ""); // Empty tags field (default empty)
+    formData.append("related_vulnerabilities", ""); // Empty related_vulnerabilities field (default empty)
+
+    
+      // Get CSRF token
+      const csrfToken = getCSRFToken();
+    
+      // Create a new XMLHttpRequest
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `/files/project/${projectId}/add/`, true);
+    
+      // Add CSRF token to the headers
+      xhr.setRequestHeader("X-CSRFToken", csrfToken);
+    
+      // Monitor progress
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+    
+          // Update the progress bar
+          document.getElementById("progress-bar").style.width = `${percent}%`;
+          document.getElementById("progress-text").textContent = `uploading ${file.name}: ${percent}%`;
+        }
+      });
+    
+      // On complete (success or error)
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          console.log("File uploaded successfully.");
+          const projectId = document.getElementById("projectId").value;
+          
+        } else {
+          console.error("Error uploading file:", xhr.statusText);
+          alert("An error occurred while uploading the file.");
+        }
+      };
+    
+      xhr.onerror = function () {
+        console.error("Error uploading file.");
+        alert("An error occurred while uploading the file.");
+      };
+    
+      // Send the file
+      xhr.send(formData);
+  }
+  
+  
+
+  function deletefile(file_id) {
+    const projectId = document.getElementById("projectId").value; // Get the project ID
+    const csrfToken = getCSRFToken();
+
+    // Use Fetch API to send the file to the server
+    fetch(`/files/file/${file_id}/delete/`, {
+      method: "POST",
+      headers: {
+          "X-CSRFToken": csrfToken, // Add CSRF token to the headers
+      },
+    })
+      .then((response) => {
+         
+      })
+      .then((data) => {
+          // Handle success response
+          console.log("File uploaded successfully:", data);
+          // Redirect to the project's files page
+          // Remove the element from the DOM
+          const element = document.getElementById("file_item_id" + file_id);
+          if (element) {
+              element.remove();
+          } else {
+              console.warn(`Element with ID ${elementId} not found`);
+          }
+
+          return data;
+      })
+      .catch((error) => {
+          // Handle error
+          console.error("Error uploading file:", error);
+          alert(`An error occurred while uploading the ${file.name}.`); // Error message
+      });
+  
+  }
+
+</script>
+
+
+
+<script>
+  // Function to filter files based on search input
+  function filterFiles() {
+    const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+    const fileItems = document.querySelectorAll('.file-item');
+
+    fileItems.forEach(item => {
+      const fileName = item.getAttribute('data-file-name').toLowerCase(); // Get and lowercase file name
+      const fileDescription = item.querySelector('.file-description').textContent.toLowerCase(); // Get and lowercase file description
+      const fileType = item.querySelector('.file-type').textContent.toLowerCase(); // Get and lowercase file description
+      const file_status = item.querySelector('.file-status').textContent.toLowerCase(); // Get and lowercase file description
+      const file_confidentiality_level = item.querySelector('.file-confidentiality-level').textContent.toLowerCase(); // Get and lowercase file description
+
+      // Concatenate file name and description
+      const searchData = fileName + ' ' + fileDescription + ' ' + fileType + ' ' + file_status + ' ' + file_confidentiality_level;
+
+      // Check if search query exists in the concatenated string
+      if (searchData.includes(searchQuery)) {
+        item.style.display = 'block'; // Show item
+      } else {
+        item.style.display = 'none'; // Hide item
+      }
+    });
+  }
+
+
+  // Function to convert text to an MD5 hash
+  function textToHash(text) {
+    // Create a hash from the text using MD5
+    const md5Hash = CryptoJS.MD5(text).toString(CryptoJS.enc.Hex);
+    return md5Hash;
+  }
+
+  // Function to generate RGB color based on hash
+  function hashToRGB(hash) {
+    // Ensure the hash is long enough (MD5 hash is 32 characters)
+    const r = parseInt(hash.substring(0, 8), 16) % 256; // Red component
+    const g = parseInt(hash.substring(8, 16), 16) % 256; // Green component
+    const b = parseInt(hash.substring(16, 24), 16) % 256; // Blue component
+    
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  // Function to set background color for each badge element
+  function setColorForBadges() {
+    const badges = document.querySelectorAll('.category'); // Get all elements with class "badge"
+    
+    badges.forEach(badge => {
+        const text = badge.innerText || badge.textContent; // Get the text content of the badge
+        const hash = textToHash(text); // Convert text to hash
+        const rgbColor = hashToRGB(hash); // Convert hash to RGB color
+        badge.style.backgroundColor = rgbColor; // Apply color
+    });
+  }
+
+
+</script>
+
+
+
+
+{% endblock %}
+

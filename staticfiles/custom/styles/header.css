@@ -1,0 +1,17 @@
+.user-avatar {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    background-color: #bf1e2e; /* Customize the background color */
+    border-radius: 50%; /* This ensures the circle shape */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for initials */
+    font-weight: bold; /* Optional: make the initials bold */
+  }
+  
+  .user-initials {
+    text-transform: uppercase; /* Ensures the initials are in uppercase */
+  }
+  

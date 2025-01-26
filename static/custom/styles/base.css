@@ -1,0 +1,24 @@
+
+
+
+a:hover {
+    text-decoration: none;
+  }
+
+  .dynamic-text {
+    white-space: nowrap;       /* Prevent wrapping */
+    overflow: hidden;          /* Hide overflow text */
+    text-overflow: ellipsis;   /* Show ellipsis when truncated */
+    max-width: 100%;           /* Use available space */
+    display: inline-block;     /* Necessary for ellipsis to work */
+  }
+  
+  .navbar-nav {
+    display: flex;             /* Ensure children use flex behavior */
+    align-items: center;       /* Center-align items */
+  }
+  
+  .flex-grow-1 {
+    flex-grow: 1;              /* Allocate available space for the text */
+  }
+  

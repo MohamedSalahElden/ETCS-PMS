@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Web App{% endblock %}</title>
+    <link  href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.1/dist/css/bootstrap.min.css"  rel="stylesheet"/>
+    {% comment %} <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
+    {% comment %} <link  rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/images/logos/favicon.png') }}"/> {% endcomment %}
+    {% block extra_css %}{% endblock %}
+
+   
+  </head>
+  <body>
+    <!-- Body Wrapper -->
+    <div class="body-wrapper" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+  
+      <!-- Main wrapper -->
+      <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            {% block content %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+    {% block additional %}{% endblock %}
+    
+
+  
+    {% block extra_js %}{% endblock %}
+  </body>
+  
+</html>

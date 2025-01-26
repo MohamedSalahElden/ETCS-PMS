@@ -1,0 +1,113 @@
+a:hover {
+  text-decoration: none;
+}
+
+.custom-btn {
+  background-color: white;
+  border: 2px solid red;
+  color: red;
+}
+
+.custom-btn:hover {
+  background-color: #f8d7da; /* Light red background on hover */
+  border-color: red;
+  color: red;
+}
+
+.form-group {
+  display: flex;
+  justify-content: space-between; /* Spread out the label and icon */
+  align-items: center; /* Vertically center them */
+}
+
+.form-label {
+  margin-right: 10px; /* Add some space between the label text and the icon */
+}
+
+.delete-icon {
+  cursor: pointer; /* Add pointer cursor for clickability */
+  color: lightgray; /* Set default color */
+  transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.delete-icon:hover {
+  color: red; /* Change color on hover */
+}
+
+#add-button {
+  display: inline-flex; /* Make it behave like a button */
+  justify-content: center; /* Center the content (the plus icon) */
+  align-items: center; /* Center the content (the plus icon) */
+  width: 35px; /* Set the width to make it square */
+  height: 35px; /* Set the height to make it square */
+  background-color: #bf1e2e; /* Green background */
+  color: white; /* White plus icon */
+  border-radius: 20%; /* Round corners */
+  font-size: 20px; /* Adjust the icon size */
+  text-align: center; /* Center the text inside the button */
+  cursor: pointer; /* Make it look like a clickable button */
+  border: none; /* Remove any default border */
+}
+
+#add-button:hover {
+  background-color: #8d0e1b; /* Darker green on hover */
+}
+
+.floating-card-custom {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%);
+  width: 80%; /* Adjust this value to make it wider */
+  max-width: 1000px; /* Optional: Set a maximum width */
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1050;
+  display: none; /* Hidden by default */
+}
+
+.floating-card {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050; /* Ensure it's above other content */
+  display: none; /* Hidden by default */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  max-width: 90%;
+}
+
+.floating-card .card {
+  border: none;
+}
+
+.floating-card .card-body {
+  padding: 20px;
+  background-color: #fff;
+}
+
+.custom-btn {
+  background-color: white;
+  border: 2px solid red;
+  color: red;
+}
+
+.custom-btn:hover {
+  background-color: #f8d7da;
+  border-color: red;
+  color: red;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  z-index: 1040; /* Slightly lower than the floating card */
+  display: none; /* Initially hidden */
+}

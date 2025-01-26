@@ -1,0 +1,97 @@
+{% load filters %}
+<header class="app-header" >
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item d-block d-xl-none">
+        <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+          <i class="ti ti-menu-2"></i>
+        </a>
+      </li>
+      <li class="nav-item flex-grow-1 dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <h5 class="dynamic-text">
+                {{ project.name|default:user.get_full_name }}
+                {% if project.name %}
+                    {% if request.user == project.owner %}
+                        <span class="text-muted small fs-2">| owner</span>
+                    {% elif request.user.is_superuser %}
+                        <span class="text-muted small fs-2">| admin</span>
+                    {% else %}
+                        <span class="text-muted small fs-2">| co-worker</span>
+                    {% endif %}
+                {% endif %}
+            </h5>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+          {% if user_projects %}
+            {% for proj in user_projects  %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'projects:project_dashboard' proj.id %}">
+                    {{ proj.name }}
+                    {% if request.user == proj.owner %}
+                        <span class="text-muted small fs-2">|  <span style="color: green;">Owner</span></span>
+                    {% elif request.user.is_superuser %}
+                        <span class="text-muted small fs-2">| <span style="color: red;">Admin</span></span>
+                    {% else %}
+                        <span class="text-muted small fs-2">| co-worker</span>
+                    {% endif %}
+                  </a>
+                </li>
+            {% endfor %}
+          {%else%}
+            <li>
+                <a class="dropdown-item">
+                    No Projects Yet
+                </a>
+            </li>
+          {% endif %}
+        </ul>
+    </li>
+    
+    </ul>
+    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+      <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+        {% if project %}
+        <a href="">
+          <svg  xmlns="http://www.w3.org/2000/svg"  width="26"  height="26"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+        </a>
+        {% endif %}
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <div class="user-avatar">
+              {% if user.first_name and user.last_name%}
+              <span class="user-initials">
+                {{ user.get_full_name|initials }}
+              </span>
+              {% else %}
+              <span class="user-initials">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+              </span>
+              {% endif %}
+            </div>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+            <div class="message-body">
+              <a href="/accounts/profile" class="d-flex align-items-center gap-2 dropdown-item">
+                <i class="ti ti-user fs-6"></i>
+                <p class="mb-0 fs-3">Profile</p>
+              </a>
+              
+              <a href="/projects/list/" class="d-flex align-items-center gap-2 dropdown-item">
+                <i class="ti ti-layout-list"></i>
+                <p class="mb-0 fs-3">Projects</p>
+              </a>
+              <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                <i class="ti ti-list-check fs-6"></i>
+                <p class="mb-0 fs-3">Tasks</p>
+              </a>
+              <a href="/accounts/logout/" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>

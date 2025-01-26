@@ -1,0 +1,68 @@
+.dropzone {
+  border: 2px dashed #d3d3d3; /* Highlighted border color */
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  background-color: #ffffff;
+  color: #333;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.dropzone.dragover {
+  background-color: #ffe5e9;
+  border-color: #ff4d5a;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.browse {
+  color: #bf1e2e;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.file-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.icon-label {
+  cursor: pointer; /* Makes the icon look clickable */
+}
+
+.file-list {
+  max-height: 300px; /* Adjust height as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding: 10px; /* Optional: for spacing */
+}
+
+
+
+.file-item:hover .delete_icon:hover {
+    color: red; /* Change icon color */
+}
+
+.file-item .delete_icon:hover svg {
+    stroke: red; /* Change SVG stroke color */
+}
+
+.file-item .delete_icon:hover {
+    background-color: rgba(255, 0, 0, 0.2); /* Light red background for better visibility */
+    border-radius: 5px; /* Optional: for rounded corners */
+}
+
+.file-item:hover .delete_icon:hover ~ * {
+    background-color: rgba(255, 0, 0, 0.2); /* Highlight the whole div */
+}
+
+.file-item:hover {
+    background-color: rgba(255, 0, 0, 0.2); /* Light red highlight */
+    transition: background-color 0.1s ease-in-out; /* Smooth transition effect */
+}
+
+

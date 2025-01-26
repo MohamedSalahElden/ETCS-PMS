@@ -1,0 +1,57 @@
+{% extends "base_before_project.html" %}
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4">Profile</h5>
+    <div class="card">
+      <div class="card-body">
+        <!-- User Information Section -->
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>User:</strong></div>
+          <div class="col-md-9">{{ profile.user }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Email:</strong></div>
+          <div class="col-md-9">{{ profile.user.email }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Phone Number:</strong></div>
+          <div class="col-md-9">{{ profile.phone_number }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Employer Code:</strong></div>
+          <div class="col-md-9">{{ profile.employer_code }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Work Email:</strong></div>
+          <div class="col-md-9">{{ profile.work_email }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Department:</strong></div>
+          <div class="col-md-9">
+            {% if profile.department_name %}
+              {{ profile.get_department_name_display }}
+            {% else %}
+              Not assigned
+            {% endif %}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Password: </strong></div>
+          <div class="col-md-9">
+            <a href="/accounts/password_change">Change Password</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Button -->
+    <div class="d-flex justify-content-end mt-4">
+      <a href="/accounts/profile/edit" class="btn btn-primary">Edit Profile</a>
+    </div>
+  </div>
+
+ 
+   
+  </div>
+{% endblock %}

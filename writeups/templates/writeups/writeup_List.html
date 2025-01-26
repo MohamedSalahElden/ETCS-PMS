@@ -1,0 +1,318 @@
+{% extends "base_for_project.html" %} 
+{% load static %} 
+
+{% block extra_css %}
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"  rel="stylesheet"/>
+<link  rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.min.js"></script>
+<link rel="stylesheet" href="{% static 'custom/styles/files.css' %}" />
+<link  href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"  rel="stylesheet"/>
+{% endblock %} {% block content %}
+
+<div class="card-body container-fluid">
+  <input type="hidden" id="projectId" value="{{ project.id }}" />
+  {% comment %} title {% endcomment %}
+  <h5 class="card-title fw-semibold mb-4 d-flex justify-content-between align-items-center">
+    Writeups
+    {% comment %} drop down for title {% endcomment %}
+    <div class="dropdown">
+      <button class="btn btn-link" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" >
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li> <a class="dropdown-item" href="{% url 'writeups:create_new_writeup' project.id %}" type="button" > Create New Writeup </a> </li>
+        <li> <a class="dropdown-item" href="{% url 'writeups:upload_writeup_files' project.id %}" type="button" > Upload Writeup Files </a> </li>
+      </ul>
+    </div>
+  </h5>
+  <div class="card">
+    <div class="card-body">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <div class="mb-3">
+              <input type="text" id="searchBar" oninput="filterFiles()" placeholder="Search ..." class="form-control" value="{{ project_name }}" />
+            </div>
+            {% comment %} files list {% endcomment %}
+            <div class="file-list">
+            {% for writeup in writeups %}
+              <div class="file-item" data-file-name="{{ writeup.title|lower }}">
+                <div class="file-header" style=" display: flex; justify-content: space-between; align-items: center; ">
+                  <div style="display: flex; align-items: center">
+                    <h6 class="fw-semibold mb-1 cursor-pointer" onclick="toggleRow(this)" >
+                      {{ writeup.title }}
+                    </h6>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    {% comment %} assigned to {% endcomment %}
+                    {% if writeup.creator %}
+                    <span class="badge category" style=" background-color: rgb(71, 71, 71); border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;" >{{ writeup.creator }}</span>
+                    {%endif%}
+                    {% comment %} View Writeup {% endcomment %}
+                    
+                    <a href="{% url 'writeups:writeup' project_id=project.id writeup_id=writeup.id %}" class="edit-icon" >
+                        <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                    </a>
+
+                    {% comment %} Edit Writeup {% endcomment %}
+
+                    <a 
+                    
+                    {% if writeup.created_by == "file_upload" %}
+                      href="{% url 'writeups:edit_writeup' project_id=project.id writeup_id=writeup.id %}" 
+                    {% elif writeup.created_by == "editor" %}
+                      href="{% url 'writeups:writeup_editor' project_id=project.id writeup_id=writeup.id %}" 
+                    {% endif %}
+
+                    class="edit-icon" >
+                      <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                  </a>
+                    
+                    {% comment %} vertical bar {% endcomment %}
+                    
+                    <div style="height: 20px; width: 2px; background-color: gray"></div>
+                    {% comment %} delete botton {% endcomment %}
+                    <a href="javascript:void(0)" onclick="deleteWriteup('{{writeup.id}}')" class="delete_icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash" > <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 7l16 0" /> <path d="M10 11l0 6" /> <path d="M14 11l0 6" /> <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /> <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                      </svg>
+                    </a>
+                    
+                  </div>
+                </div>
+                <p class="fw-normal task-description" style="font-size: 10px; padding-left: 27px; padding-right: 150px;">{{ task.description|truncatechars:100 }}</p>
+
+                
+
+                {% comment %} <input type="hidden" id="search_context" class="search_context" value="{{ task.description }} {{ task.status }} {{ task.title }} {{ task.assigned_to }}" /> {% endcomment %}
+                {% comment %} <input type="hidden" id="projectId" value="{{project.id}}" /> {% endcomment %}
+              
+
+                
+                <div class="file-details card-body" style="display: none">
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>Description:</strong></div>
+                      <div class="col-md-9">{{  writeup.updated_at }}</div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>findings:</strong></div>
+                      <div class="col-md-9">{{  writeup.findings }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>creator:</strong></div>
+                      <div class="col-md-9">{{  writeup.creator }}</div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>editors:</strong></div>
+                      <div class="col-md-9">{{  writeup.editors }}</div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>Related Tasks:</strong></div>
+                      <div class="col-md-9">
+                        <ul>
+                          {% for task in writeup.tasks.all %}
+                            <li>{{ task }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      {% if writeup.evidence_files.all %}
+                      <div class="row mb-3">
+                        <div class="col-md-3"><strong>Related Files: </strong></div>
+                        <div class="col-md-9">
+                          {% for file in writeup.evidence_files.all %}
+                          <a href="{{ file.file.url }}" download="{{ file.name }}" style="text-decoration: none;">
+                            <span class="badge category" style="background-color: rgb(71, 71, 71); border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;">
+                              {{ file.name }}
+                            </span>
+                          </a>
+                          {% endfor %}
+                        </div>
+                      </div>
+
+
+                    {% endif %}
+                      
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>created_at:</strong></div>
+                      <div class="col-md-9">{{  writeup.created_at }}</div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-3"><strong>updated_at:</strong></div>
+                      <div class="col-md-9">{{  writeup.updated_at }}</div>
+                    </div>
+                  </div>  
+                </div>
+                <hr style="border: none; border-top: 1px solid lightgray; margin: 10px 0;">
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    setColorForBadges();
+  });
+  
+ 
+
+ 
+
+
+
+
+  function getCSRFToken() {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+      if (cookie.startsWith("csrftoken=")) {
+        return cookie.split("=")[1];
+      }
+    }
+    return null;
+  }
+
+ 
+  function deleteWriteup(writeup_id) {
+    const projectId = document.getElementById("projectId").value; // Get the project ID
+    const csrfToken = getCSRFToken();
+
+    // Use Fetch API to send the file to the server
+    fetch(`/projects/${projectId}/writeups/${writeup_id}/delete`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken, // Add CSRF token to the headers
+      },
+    })
+      .then((response) => {})
+      .then((data) => {
+        // Handle success response
+        console.log("File uploaded successfully:", data);
+        // Redirect to the project's files page
+        window.location.href = `/projects/${projectId}/writeups/`;
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error uploading file:", error);
+        alert(`An error occurred while uploading the ${file.name}.`); // Error message
+      });
+  }
+
+
+  
+</script>
+
+{% comment %} search script {% endcomment %}
+<script>
+
+
+  // Function to convert text to an MD5 hash
+  function textToHash(text) {
+    // Create a hash from the text using MD5
+    const md5Hash = CryptoJS.MD5(text).toString(CryptoJS.enc.Hex);
+    return md5Hash;
+  }
+
+  // Function to generate RGB color based on hash
+  function hashToRGB(hash) {
+    // Ensure the hash is long enough (MD5 hash is 32 characters)
+    const r = parseInt(hash.substring(0, 8), 16) % 256; // Red component
+    const g = parseInt(hash.substring(8, 16), 16) % 256; // Green component
+    const b = parseInt(hash.substring(16, 24), 16) % 256; // Blue component
+
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  // Function to set background color for each badge element
+  function setColorForBadges() {
+    const badges = document.querySelectorAll(".category"); // Get all elements with class "badge"
+
+    badges.forEach((badge) => {
+      const text = badge.innerText || badge.textContent; // Get the text content of the badge
+      const hash = textToHash(text); // Convert text to hash
+      const rgbColor = hashToRGB(hash); // Convert hash to RGB color
+      badge.style.backgroundColor = rgbColor; // Apply color
+    });
+  }
+
+  function toggleRow(element) {
+    // Find all collapsible file-details sections
+    const allExpandableSections = document.querySelectorAll('.file-details');
+    
+    // Find the specific file-details section related to the clicked element
+    const expandableSection = element.closest('.file-item').querySelector('.file-details');
+  
+    // Loop through all expandable sections to hide them
+    allExpandableSections.forEach(section => {
+      if (section !== expandableSection) {
+        section.style.display = "none"; // Hide other sections
+      }
+    });
+  
+    // Toggle visibility of the targeted section
+    if (expandableSection.style.display === "none" || !expandableSection.style.display) {
+      expandableSection.style.display = "block"; // Show the section
+    } else {
+      expandableSection.style.display = "none"; // Hide the section
+    }
+  }
+
+
+// Function to filter files based on search input and show only those with scores higher than average
+function filterFiles() {
+  const searchQuery = document.getElementById("searchBar").value.toLowerCase();
+  const fileItems = document.querySelectorAll(".file-item");
+  const scoredItems = [];
+
+  // If the search bar is empty, show all items
+  if (!searchQuery) {
+      fileItems.forEach((item) => {
+          item.style.display = "block";  // Show all items
+      });
+      return;  // Exit the function to avoid further processing
+  }
+
+  // Calculate scores for all items
+  fileItems.forEach((item) => {
+      const searchData = item.querySelector(".search_context").value.toLowerCase();
+
+      // Calculate the score based on the number of occurrences of the query in the search data
+      const matchCount = (searchData.match(new RegExp(searchQuery, 'g')) || []).length;
+      let score = matchCount * 10; // You can adjust the multiplier based on preference (e.g., 10 per match)
+      
+      // Optionally, add a score modifier if the match is found at the start of the text (for relevance)
+      if (searchData.indexOf(searchQuery) === 0) {
+          score += 5; // Add bonus points for matches at the start of the text
+      }
+
+      // Store the item along with its score
+      scoredItems.push({ item, score });
+  });
+
+  // Calculate the average score
+  const totalScore = scoredItems.reduce((sum, scoredItem) => sum + scoredItem.score, 0);
+  const averageScore = totalScore / scoredItems.length;
+
+  // Show or hide the items based on the score
+  scoredItems.forEach((scoredItem) => {
+      if (scoredItem.score > averageScore) {
+          scoredItem.item.style.display = "block";  // Show the item if its score is higher than the average
+      } else {
+          scoredItem.item.style.display = "none";  // Hide the item if its score is lower than the average
+      }
+  });
+}
+
+
+</script>
+{% endblock %}

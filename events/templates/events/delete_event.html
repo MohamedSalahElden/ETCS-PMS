@@ -1,0 +1,21 @@
+{% extends "base_for_project.html" %}
+
+
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4">Events</h5>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Delete Event</h5>
+        <p>Are you sure you want to delete the event titled "<strong>{{ event.title }}</strong>"?</p>
+        <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+          <a href="{% url 'events:event_list' project_id=event.project.id %}" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

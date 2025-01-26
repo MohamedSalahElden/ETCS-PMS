@@ -1,0 +1,74 @@
+.ql-code-block {
+  white-space: pre-wrap !important;
+  word-wrap: break-word;
+}
+
+.ql-code-block-container {
+  white-space: pre;
+  overflow-x: auto;
+  word-wrap: normal;
+  background-color: #f5f5f5; /* Optional: Light background */
+  padding: 10px; /* Optional: Padding for readability */
+  border-radius: 5px; /* Optional: Rounded corners */
+}
+/* Toolbar styles */
+
+.ql-custom-button {
+  background-color: transparent;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.ql-custom-button:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.ql-toolbar {
+  position: sticky; /* Relative to the parent container (card) */
+  top: 65px;
+  width: 100%; /* Match the card's width */
+  z-index: 10; /* Ensure it stays on top of other elements within the card */
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid #ccc; /* Optional: border for the toolbar */
+  background-color: #fff; /* White background for the toolbar */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: shadow for depth */
+}
+
+.ql-formats {
+  background-color: rgb(255, 255, 255);
+  border-radius: 7px;
+  padding: 5px;
+  margin: 0px;
+}
+
+.card .ql-toolbar {
+  width: 100%; /* Adjust the width to match the card */
+}
+
+/* Ensure the editor content is below the toolbar */
+.editor-wrapper {
+  margin-top: 5px; /* Adjust the margin as needed */
+}
+
+/* Remove border around the editor */
+.ql-container {
+  margin-top: 0 !important; /* Ensure no unwanted margin above */
+  border: none !important;
+}
+
+/* Remove borders in the editable area */
+.ql-editor {
+  border: none !important;
+  outline: none; /* Remove focus outline */
+  padding: 0; /* Optional: Adjust padding */
+  margin-top: 30px; /* Optional: Adjust margin */
+}
+
+/* Remove padding/margins from the container */
+#kt_docs_quill_autosave {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}

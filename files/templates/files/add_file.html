@@ -1,0 +1,285 @@
+{% extends "base_for_project.html" %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+
+<!-- Include Tagify's CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.css">
+
+<!-- Include Tagify's JS -->
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.22.0/dist/tagify.min.js"></script>
+
+<link rel="stylesheet" href="{% static 'custom/styles/files.css' %}">
+
+{% endblock %}
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4">Add a File to Project: {{ project.name }}</h5>
+    <div class="card">
+      <div class="card-body">
+        
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+
+              
+            {% for field in form %}
+
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+              
+              {% if field.name == "external_participants" %}
+              <input name="external_participants" id="tag-input" type="text" autofocus value='{{ event.external_participants }}' >
+              
+              {% elif field.name == "team_participants" %}
+                <div class="row mb-3">
+                  <p>{{field}}</p>
+                </div>
+              
+              {%else%}
+                {{ field }}
+              {%endif%}
+
+              
+            </div>
+
+            
+          {% endfor %}
+          
+            
+
+            <div class="mb-3">
+              <button type="submit" class="btn btn-primary w-100">Save</button>
+            </div>
+            <a href="{% url 'events:event_list' project.id %}" class="btn btn-outline-dark w-100">Cancel</a>
+  
+          
+            
+
+        </form>
+        
+      </div>
+      <div class="card-body">
+        
+        <input type="hidden" id="projectId" value="{{ project.id }}" />
+       
+        <div class="mb-4">
+          <div id="progress-container" style=" display: none; width: 100%; margin-top: 10px;">
+            <div class="progress" style="height: 10px; background-color: #d3d3d3; border-radius: 8px;">
+              <div
+                id="progress-bar"
+                class="progress-bar progress-bar-striped progress-bar-animated"
+                role="progressbar"
+                aria-valuenow="0"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="width: 0%; background-color: #ff0000;"
+              ></div>
+            </div>
+            <div id="progress-text" style="text-align: center; margin-top: 5px; font-size: 14px; font-weight: bold; color: #333;">0%</div>
+          </div>
+          <div id="dropzone" class="dropzone">
+                       
+                     <div class="mb-4">
+                       <div class="icon-label">
+                         <svg
+                         xmlns="http://www.w3.org/2000/svg"
+                         width="60"
+                         height="60"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         class="icon icon-tabler icons-tabler-outline icon-tabler-upload"
+                       >
+                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                         <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                         <path d="M7 9l5 -5l5 5" />
+                         <path d="M12 4l0 12" />
+                       </svg>
+         
+                       </div>
+                      
+                     </div>
+                   
+                   <p>Drag and drop a file here or <span class="browse">browse</span></p>
+                   <input type="file" id="fileInput" multiple hidden />
+                 </div>
+                   </div>
+                  
+                 
+       
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+
+<script>
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const fileInfo = document.getElementById("fileInfo");
+
+  // Highlight dropzone on drag events
+  dropzone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+  });
+
+
+
+  // Handle file selection through browse
+  dropzone.addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", () => {
+    const files = fileInput.files;  // Get all the selected files
+    if (files.length > 0) {
+        // Display file info for each file
+        Array.from(files).forEach((file) => {
+          
+            upload_file(file); // Upload each file
+        });
+    }
+ });
+
+  if(document.getElementById("add_file_dropdown_botton")){
+    // Handle file selection through browse
+    add_file_dropdown_botton.addEventListener("click", () => {
+      fileInput.click();
+    });
+  }
+
+
+  function getCSRFToken() {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+      if (cookie.startsWith("csrftoken=")) {
+        return cookie.split("=")[1];
+      }
+    }
+    return null;
+  }
+
+
+
+
+  dropzone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dropzone.classList.remove("dragover");
+  
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      // Show progress bar
+      document.getElementById("progress-container").style.display = "block";
+  
+      // Upload each file
+      Array.from(files).forEach((file) => {
+        upload_file(file);
+      });
+    }
+  });
+  
+  function upload_file(file) {
+    const projectId = document.getElementById("projectId").value; // Get the project ID
+    const formData = new FormData(); // Create a FormData object
+  
+    // Set form fields with exact names
+    formData.append("name", file.name); // Replace with a meaningful name
+    formData.append("description", file.type); // Replace with a meaningful description
+    formData.append("file", file); // Attach the file
+  
+    // Get CSRF token
+    const csrfToken = getCSRFToken();
+  
+    // Create a new XMLHttpRequest
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/files/project/${projectId}/add/`, true);
+  
+    // Add CSRF token to the headers
+    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+  
+    // Monitor progress
+    xhr.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+  
+        // Update the progress bar
+        document.getElementById("progress-bar").style.width = `${percent}%`;
+        document.getElementById("progress-text").textContent = `uploading ${file.name}: ${percent}%`;
+  
+        // Smooth progress bar animation
+      }
+    });
+  
+    // On complete (success or error)
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        console.log("File uploaded successfully.");
+        const projectId = document.getElementById("projectId").value;
+        window.location.href = `/files/project/${projectId}/files/`;
+      } else {
+        console.error("Error uploading file:", xhr.statusText);
+        alert("An error occurred while uploading the file.");
+      }
+    };
+  
+    xhr.onerror = function () {
+      console.error("Error uploading file.");
+      alert("An error occurred while uploading the file.");
+    };
+  
+    // Send the file
+    xhr.send(formData);
+  }
+  
+  
+
+  function deletefile(file_id) {
+    const projectId = document.getElementById("projectId").value; // Get the project ID
+    const csrfToken = getCSRFToken();
+
+    // Use Fetch API to send the file to the server
+    fetch(`/files/file/${file_id}/delete/`, {
+      method: "POST",
+      headers: {
+          "X-CSRFToken": csrfToken, // Add CSRF token to the headers
+      },
+    })
+      .then((response) => {
+         
+      })
+      .then((data) => {
+          // Handle success response
+          console.log("File uploaded successfully:", data);
+          // Redirect to the project's files page
+          window.location.href = `/files/project/${projectId}/files/`;
+      })
+      .catch((error) => {
+          // Handle error
+          console.error("Error uploading file:", error);
+          alert(`An error occurred while uploading the ${file.name}.`); // Error message
+      });
+  
+  }
+
+</script>
+
+
+
+{% endblock %}
+

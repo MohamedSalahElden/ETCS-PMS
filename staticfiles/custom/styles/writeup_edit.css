@@ -1,0 +1,99 @@
+/* Editor container */
+#writeup_editor {
+  margin: 20px;
+}
+
+/* Block styling */
+.writeup_block {
+  position: relative;
+  padding: 10px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.writeup_block:hover {
+  background-color: #f9f9f9; /* Light background on hover */
+}
+
+/* + Button styling */
+.writeup_add-block {
+  display: none; /* Initially hidden */
+  position: absolute;
+  left: 10px; /* Align to the left */
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.writeup_block:hover .writeup_add-block {
+  display: inline; /* Show on hover */
+}
+
+/* Content inside the block */
+.writeup_content {
+  flex-grow: 1; /* Fill available space */
+  padding-left: 40px; /* Space for the + button */
+  outline: none; /* Remove border on focus */
+}
+
+/* Dropdown menu */
+.writeup_dropdown {
+  position: absolute;
+  top: 100%; /* Below the block */
+  left: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.writeup_hidden {
+  display: none;
+}
+
+.writeup_menu-item {
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.writeup_menu-item:hover {
+  background-color: #f5f5f5;
+}
+
+
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  z-index: 1040; /* Slightly lower than the floating card */
+  display: none; /* Initially hidden */
+}
+
+
+.floating-card-custom {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%);
+  width: 80%; /* Adjust this value to make it wider */
+  max-width: 1000px; /* Optional: Set a maximum width */
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1050;
+  display: none; /* Hidden by default */
+}

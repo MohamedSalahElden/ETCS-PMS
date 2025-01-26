@@ -1,0 +1,83 @@
+{% extends "base_for_project.html" %}
+
+{% block content %}
+  <div class="card-body container-fluid">
+    <h5 class="card-title fw-semibold mb-4">Project Details</h5>
+    <div class="card">
+      <div class="card-body">
+        
+        <!-- Project Information Section -->
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Project Name:</strong></div>
+          <div class="col-md-9">{{ project.name }}</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Description:</strong></div>
+          <div class="col-md-9">{{ project.description }}</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Start Date:</strong></div>
+          <div class="col-md-9">{{ project.start_date }}</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Duration:</strong></div>
+          <div class="col-md-9">{{ project.duration }} days</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Vendor:</strong></div>
+          <div class="col-md-9">{{ project.vendor }}</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Manufacturer:</strong></div>
+          <div class="col-md-9">{{ project.manufacturer }}</div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Project Type:</strong></div>
+          <div class="col-md-9">
+            {% if project.project_type == 'sa' %}
+              Security Assessment
+            {% elif project.project_type == 'pt' %}
+              Pentest
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Project Workers:</strong></div>
+          <div class="col-md-9">
+            <ul>
+              {% for worker in project.project_workers.all %}
+                <li>{{ worker.username }}</li>
+              {% empty %}
+                <li>No workers assigned</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Created At:</strong></div>
+          <div class="col-md-9">{{ project.created_at }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-3"><strong>Updated At:</strong></div>
+          <div class="col-md-9">{{ project.updated_at }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action Buttons Section -->
+    <div class="d-flex justify-content-end mt-4">
+      <a href="{% url 'projects:modify_project' project.id %}" class="btn btn-warning me-2">Modify</a>
+      <a href="{% url 'projects:delete_project' project.id %}" class="btn ">Delete</a>
+    </div>
+  </div>
+{% endblock %}

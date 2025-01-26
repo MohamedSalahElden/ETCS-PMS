@@ -1,0 +1,42 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  border: 0px solid #ddd;
+  /* background-color: #f4f4f4; */
+}
+
+h1 {
+  color: #ffffff;
+
+  background-color: #960915;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+h2,
+h3 {
+  color: #960915;
+}
+code {
+  font-family: monospace;
+}
+
+.writeup_image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}
