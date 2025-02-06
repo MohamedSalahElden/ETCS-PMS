@@ -30,7 +30,8 @@ urlpatterns = [
     path('projects/', include('projects.urls')),
     path('files/', include('files.urls')),
     path('', include('tasks.urls')),
-    path('', include('writeups.urls')),
+    # path('', include('writeups.urls')),
+    path('', include('md_writeup.urls' , namespace='writeups')  ),
     path("admin/", admin.site.urls),
     
 ]

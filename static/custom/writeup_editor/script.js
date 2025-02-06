@@ -65,18 +65,11 @@ var quill = new Quill("#kt_docs_quill_autosave", {
       allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
       showDenotationChar: false,
       spaceAfterInsert: false,
-      onSelect: (item, insertItem) => {
-        const editor = quill;
-        insertItem(item);
-        // necessary because quill-mention triggers changes as 'api' instead of 'user'
-        editor.insertText(editor.getLength() - 1, "", "user");
-      },
       source: (searchTerm, renderList) => {
-        const values = [
-          { id: 1, value: "Fredrik Sundqvist", age: 5 },
-          { id: 2, value: "Patrik Sjölin", age: 20 },
-        ];
-
+        
+        const element = document.getElementById("myElement");
+        const values = JSON.parse(element.getAttribute("files"));
+        console.log(values)
         if (searchTerm.length === 0) {
           renderList(values, searchTerm);
         } else {
@@ -92,6 +85,28 @@ var quill = new Quill("#kt_docs_quill_autosave", {
           renderList(matches, searchTerm);
         }
       },
+      onSelect: (item, insertItem) => {
+        const editor = quill;
+        
+        // Ensure the editor is focused
+        if (!editor.hasFocus()) {
+            editor.focus();
+        }
+    
+        // Get the current selection (cursor position)
+        setTimeout(() => {
+            const range = editor.getSelection();
+            if (range) {
+                const content = `
+                    <a href="${item.value}" download="salah"> ${item.value}</a>
+                `;
+                
+                // Insert HTML at cursor position
+                editor.clipboard.dangerouslyPasteHTML(range.index, content);
+            }
+        }, 100); // Small delay to allow focus and selection retrieval
+    }
+    
     },
   },
   placeholder: "Compose an epic...",

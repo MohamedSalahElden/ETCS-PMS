@@ -41,7 +41,9 @@ def project_dashboard(request, project_id):
     if not (request.user.is_staff or project.owner == request.user or request.user in project.project_workers.all()):
         return HttpResponseForbidden("You do not have permission to view this project.")
     
-    return render(request, 'projects/project_dashboard.html', {'project': project})
+    files = project.files.all().order_by('-created_at')
+    events = project.events.all().order_by('-event_date')
+    return render(request, 'projects/project_dashboard.html', {'project': project , 'events':events , 'files' : files} )
 
 @login_required
 def modify_project(request, project_id):

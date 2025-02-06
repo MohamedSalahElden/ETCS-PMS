@@ -19,8 +19,6 @@
         ```bash
         python manage.py collectstatic 
         ```
-
-
 3. **Database Setup**
         
     - Create and  Apply database migrations

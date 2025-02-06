@@ -6,9 +6,7 @@
   <link rel="stylesheet" href="https://unpkg.com/@yaireo/tagify/dist/tagify.css">
   <link rel="stylesheet" href="{% static 'custom/scripts/FileUploader/uploader.css' %}">
   <link rel="stylesheet" href="{% static 'custom/writeup_editor/style.css' %}">
-  <link rel="stylesheet" href="{% static 'custom/scripts/DBMultiSelector/TaskMultiSelector.css' %}">
-  {% comment %} <link rel="stylesheet" href="{% static 'custom/styles/tagify_input.css' %}"> {% endcomment %}
-  
+  <link rel="stylesheet" href="{% static 'custom/scripts/DBMultiSelector/TaskMultiSelector.css' %}">  
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css"> <!-- Updated to dark theme -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill-mention@2.2.4/dist/quill.mention.min.css">
@@ -83,6 +81,11 @@
 {% block additional %}
   <div id="overlay" class="overlay" onclick="hideFloatingCard(); hideFloatingCard()"></div>
   <div id="floatingCard" class="floating-card-custom">
+    <div id="myElement" files='[
+          {"id": 1, "value": "ahmed", "age": 5},
+          {"id": 2, "value": "mohamed", "age": 20}
+      ]'>
+      </div>
       <div class="card-body" style="padding: 30px;"> 
             {% comment %} form {% endcomment %}       
             <div class="mb-4">
