@@ -78,7 +78,7 @@
     .autocomplete-item {
       padding: 8px 12px;
       cursor: pointer;
-      transition: all 0.2s;
+      
       color: #1f2937;
     }
     
@@ -96,6 +96,7 @@
         overflow-x: hidden;
         background-color: #ffffff;
         margin: 5px;
+        min-height: 1000px;
         height: auto !important;
     }
     
@@ -117,19 +118,8 @@
       background: rgba(0, 123, 255, 0.1) !important;
       border: 1px dashed #007bff !important;
     }
-    .CodeMirror {
-      padding: 10px;
-      transition: all 0.2s ease;
-      
-    }
 
-    .CodeMirror-scroll {
-      height: auto !important;
-    }
-    .CodeMirror-sizer {
-      height: auto !important;
-      min-height: 100px;  /* Optional: Ensures some initial height */
-  }
+
   
 
     .editor-toolbar {
@@ -179,34 +169,6 @@
   </style>
 
   <style>
-    .EasyMDEContainer .editor-toolbar {
-      background-color:rgb(255, 255, 255);
-      border: 1px solid #d1d5db;
-      margin:4px;
-      border-radius: 10px;
-      padding: 4px;
-    }
-    .EasyMDEContainer .editor-toolbar button {
-      background: #ffffff;
-      border: 1px solid #d1d5db;
-      color: #333;
-      border-radius: 6px;
-      padding: 6px 10px;
-      margin: 4px;
-      transition: all 0.3s ease;
-    }
-    .EasyMDEContainer .editor-toolbar button:hover {
-      background-color:rgb(164, 28, 28);
-      color: #fff;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .EasyMDEContainer .editor-toolbar button.active {
-      background-color:rgb(164, 28, 28);
-      color: white;
-    }
-  </style>
-
-  <style>
     .cm-header.cm-header-1,
     .cm-header.cm-header-2,
     .cm-header.cm-header-3,
@@ -228,13 +190,31 @@
       font-family: 'Calibre', monospace;
       font-size: 12px;
       font-weight: normal;
-      height:auto !important;
       border: 1px solid rgb(82, 137, 219);
       border-radius: 10px;
       margin: 5px;
+      min-height: 800px;
       max-width: 100%;
-      margin-bottom : 100px;
+      
     }
+    /* Add these styles */
+.mermaid {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+  overflow: auto;
+}
+
+.mermaid:empty {
+  display: none;
+}
+
+.editor-preview pre {
+  background: #282c34 !important;
+  padding: 15px !important;
+  border-radius: 8px !important;
+}
   </style>
 {% endblock %}
 
@@ -294,7 +274,13 @@
     hljs.highlightAll();
 
     // Initialize Mermaid (do not start on load because we control when to render)
-    mermaid.initialize({ startOnLoad: true });
+    // Replace existing mermaid initialization with:
+mermaid.initialize({
+  startOnLoad: false,
+  securityLevel: 'loose',
+  theme: 'default',
+  fontFamily: 'Poppins, sans-serif'
+});
 
     // Insert Table Function (unchanged)
     function insertTable(editor) {
@@ -325,26 +311,25 @@
       });
       // Create a temporary container to manipulate the HTML
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = html;
+  tempDiv.innerHTML = html;
       // Look for code blocks that are marked as mermaid and convert them
+      // Modify the previewRender function's mermaid handling:
       tempDiv.querySelectorAll('pre code.language-mermaid').forEach((block) => {
         const parentPre = block.parentElement;
-        // Create a div with class "mermaid" containing the raw mermaid code
         const mermaidDiv = document.createElement('div');
         mermaidDiv.className = 'mermaid';
-        mermaidDiv.textContent = block.textContent;
-        // Replace the <pre> block with the Mermaid div
+        
+        // Preserve original formatting
+        mermaidDiv.textContent = block.textContent
+          .replace(/<br>/g, '\n')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&');
+    
         parentPre.parentElement.replaceChild(mermaidDiv, parentPre);
       });
 
-      // Get the updated HTML
-      const updatedHTML = tempDiv.innerHTML;
-
-      // Use Mermaid to render the diagrams
-      mermaid.contentLoaded();
-
-      // Return the updated HTML as a string
-      return updatedHTML;
+      return tempDiv.innerHTML;
     }
 
     // Image upload function remains the same
@@ -401,7 +386,7 @@
     const easyMDE = new EasyMDE({
       element: document.getElementById('id_content'),
       toolbar: false,
-      autoHeight: true,
+      
       spellChecker: false,
       autoDownloadFontAwesome: true,
       autosave: {enabled: false},
@@ -432,14 +417,39 @@
     // After each preview update, initialize Mermaid diagrams
     // (This example uses a MutationObserver on the preview area)
     const previewArea = document.querySelector('.editor-preview');
-    const observer = new MutationObserver(() => {
-      // Render any Mermaid diagrams in the preview
-      mermaid.init(undefined, previewArea.querySelectorAll('.mermaid'));
-    });
-
-    if (previewArea) {
-      observer.observe(previewArea, { childList: true, subtree: true });
+    // With this updated version:
+    // Replace existing observer with:
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.addedNodes.length) {
+      mermaid.run({
+        nodes: mutation.addedNodes,
+        suppressErrors: true
+      });
     }
+  });
+});
+
+if (previewArea) {
+  observer.observe(previewArea, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    characterData: true
+  });
+}
+
+// Add this new function
+function forceMermaidRender() {
+  const mermaidElements = document.querySelectorAll('.mermaid');
+  if (mermaidElements.length > 0) {
+    mermaid.run({
+      nodes: mermaidElements,
+      suppressErrors: true
+    });
+  }
+}
+   
     // Handle paste events for images/files
     easyMDE.codemirror.on('paste', function(editor, e) {
       if(e.clipboardData.files.length > 0) {
@@ -761,11 +771,7 @@
           this.style.backgroundColor = "#bf1e2e";
           this.style.color = "#fff";
           this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>'; // Eye icon
-          document.querySelector('.EasyMDEContainer .CodeMirror').style.border = 'none';
-
-
-
-          
+          document.querySelector('.EasyMDEContainer .CodeMirror').style.border = 'none'; 
       }  
       
       if (easyMDE.isPreviewActive() === true) {
@@ -775,27 +781,28 @@
         this.style.border = "2px solid #bf1e2e";
         this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'; // Edit icon
         document.querySelector('.EasyMDEContainer .CodeMirror').style.border = '1px solid rgb(82, 137, 219)';
-
-
       }
 
       easyMDE.togglePreview();
       
       setTimeout(() => {
+        forceMermaidRender();
         syncPreviewHeight();
         easyMDE.codemirror.refresh();
-      }, 300);
+      }, 100);
     });
 
 
   function syncPreviewHeight() {
     const preview = document.querySelector('.editor-preview');
+    x = document.querySelector(".CodeMirror");
     if (preview) {
       preview.style.height = 'auto';
       const newHeight = preview.scrollHeight + 50; // Add padding
       easyMDE.codemirror.getWrapperElement().style.height = `${newHeight}px`;
+     x.style.height = 'auto !important'
     }
-
+    
     
   }
 

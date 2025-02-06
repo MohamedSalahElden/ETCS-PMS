@@ -113,17 +113,17 @@ def autocomplete_items(request , project_id):
     {'name': 'task: Hardware Intrusion Detection Testing', 'slug': 'hardware-intrusion-detection-testing'},
     {'name': 'task: Secure Element Assessment', 'slug': 'secure-element-assessment'},
     {'name': 'task: Power Supply Analysis', 'slug': 'power-supply-analysis'},
-    {'name': 'task: RF Protocol Security Testing', 'slug': 'rf-protocol-security-testing'},
-    {'name': 'task: OTA Update Security', 'slug': 'ota-update-security'},
-    {'name': 'task: Hardware Abstraction Layer Audit', 'slug': 'hardware-abstraction-layer-audit'},
-    {'name': 'task: Debug Interface Lockout Testing', 'slug': 'debug-interface-lockout-testing'},
-    {'name': 'task: Device Access Control Review', 'slug': 'device-access-control-review'},
-    {'name': 'task: Inter-Integrated Circuit Security Testing', 'slug': 'inter-integrated-circuit-security-testing'},
-    {'name': 'task: Industrial Control System Assessment', 'slug': 'industrial-control-system-assessment'},
-    {'name': 'task: Firmware Integrity Verification', 'slug': 'firmware-integrity-verification'},
-    {'name': 'task: Physical Layer Attack Simulation', 'slug': 'physical-layer-attack-simulation'},
-    {'name': 'task: Device Hardening Evaluation', 'slug': 'device-hardening-evaluation'},
-    {'name': 'task: Bootloader Exploit Testing', 'slug': 'bootloader-exploit-testing'}
+    {'name': 'File: RF Protocol Security Testing', 'slug': 'rf-protocol-security-testing'},
+    {'name': 'File: OTA Update Security', 'slug': 'ota-update-security'},
+    {'name': 'File: Hardware Abstraction Layer Audit', 'slug': 'hardware-abstraction-layer-audit'},
+    {'name': 'File: Debug Interface Lockout Testing', 'slug': 'debug-interface-lockout-testing'},
+    {'name': 'File: Device Access Control Review', 'slug': 'device-access-control-review'},
+    {'name': 'File: Inter-Integrated Circuit Security Testing', 'slug': 'inter-integrated-circuit-security-testing'},
+    {'name': 'File: Industrial Control System Assessment', 'slug': 'industrial-control-system-assessment'},
+    {'name': 'File: Firmware Integrity Verification', 'slug': 'firmware-integrity-verification'},
+    {'name': 'File: Physical Layer Attack Simulation', 'slug': 'physical-layer-attack-simulation'},
+    {'name': 'File: Device Hardening Evaluation', 'slug': 'device-hardening-evaluation'},
+    {'name': 'File: Bootloader Exploit Testing', 'slug': 'bootloader-exploit-testing'}
 ]
 
     return JsonResponse(tasks, safe=False)
