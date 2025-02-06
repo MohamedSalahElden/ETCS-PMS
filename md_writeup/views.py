@@ -30,7 +30,63 @@ def create_content(request, project_id):
             return render(request, 'editor/success.html')
     else:
         form = MarkdownContentForm()
-    return render(request, 'editor/editor.html', {'form': form, 'project': project,})
+
+    initial_text = '''
+
+# Embedded Cybersecurity: Protecting the Core of IoT Systems
+
+
+## Introduction
+
+Embedded systems are the backbone of many modern technologies, ranging from **IoT devices** to **critical infrastructure**. These systems are often deployed in sensitive environments where security breaches can lead to significant consequences. In this document, we'll explore the importance of embedded cybersecurity and the measures that can be taken to protect these systems.
+
+
+
+
+> **"Embedded systems are everywhere – from medical devices to industrial machines. Securing these devices is crucial to ensuring the safety of the modern world."** – Cybersecurity Expert
+
+## Why Embedded Cybersecurity is Important
+
+### The Role of Embedded Systems in Cybersecurity
+
+Embedded systems are **purpose-built** systems designed to perform specific tasks. They control everything from household appliances to high-performance military equipment. As these devices become interconnected through networks, they become increasingly vulnerable to cyberattacks.
+
+#### Key Security Risks in Embedded Systems:
+
+| Risk Type          | Description                                                            | Example                            |
+|--------------------|------------------------------------------------------------------------|------------------------------------|
+| **Physical Attacks**| Malicious actors gaining physical access to the system.                | Fault Injection Attacks            |
+| **Side-channel Attacks**| Exploiting the physical characteristics of a device during operation. | Power Analysis Attacks             |
+| **Software Vulnerabilities**| Exploits in the firmware or OS running on the device.           | Buffer Overflow in Firmware        |
+| **Network-based Attacks**| Targeting the device through communication interfaces.          | Man-in-the-Middle (MITM) Attacks   |
+
+### Common Threats to Embedded Systems
+
+1. **Firmware Exploits**: Many embedded devices run custom firmware. Attackers may target these vulnerabilities to compromise the device.
+2. **Supply Chain Attacks**: Malicious components or firmware could be introduced during manufacturing.
+3. **Unauthorized Access**: Weak authentication and encryption mechanisms leave devices open to unauthorized control.
+
+### Security Measures for Embedded Systems
+
+#### 1. **Secure Boot Process**
+
+The **Secure Boot** process ensures that only trusted firmware is loaded during the device startup. This prevents attackers from replacing the device's firmware with malicious versions.
+
+```c
+// C code example for implementing a basic secure boot
+if (verify_firmware_signature(firmware)) {
+    load_firmware(firmware);
+} else {
+    // Stop booting if the firmware is tampered
+    halt_device();
+}
+```
+
+![default_wallpaper.png](/media/project_files/default_wallpaper_egogbC8.png)
+
+
+'''
+    return render(request, 'editor/editor.html', {'form': form, 'project': project, 'initial_text': initial_text})
 
 def view_content(request, pk):
     content = get_object_or_404(MarkdownContent, pk=pk)
