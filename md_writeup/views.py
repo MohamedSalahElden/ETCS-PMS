@@ -36,6 +36,8 @@ def create_content(request, project_id):
 # Embedded Cybersecurity: Protecting the Core of IoT Systems
 
 
+[task: Firmware Analysis •](@user-chip:/users/firmware-analysis)
+
 ## Introduction
 
 Embedded systems are the backbone of many modern technologies, ranging from **IoT devices** to **critical infrastructure**. These systems are often deployed in sensitive environments where security breaches can lead to significant consequences. In this document, we'll explore the importance of embedded cybersecurity and the measures that can be taken to protect these systems.
@@ -130,7 +132,7 @@ def autocomplete_items(request , project_id):
     # query = request.GET.get('query', '')
     # For now we return a fixed list.
     tasks = [
-    {'name': 'task: Firmware Analysis', 'slug': 'firmware-analysis'},
+    {'name': 'task: Firmware Analysis', 'slug': '/users/firmware-analysis'},
     {'name': 'task: JTAG Debugging', 'slug': 'jtag-debugging'},
     {'name': 'task: Wireless Protocol Assessment', 'slug': 'wireless-protocol-assessment'},
     {'name': 'task: Secure Boot Verification', 'slug': 'secure-boot-verification'},
