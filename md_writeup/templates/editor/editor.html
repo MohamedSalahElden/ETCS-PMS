@@ -29,7 +29,42 @@
 <style>
 
 
+  // Add to your CSS
+  .autocomplete-item-options strong {
+    display: block;
+    font-weight: 600;
+  }
+  .autocomplete-item-options span {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+  }
 
+  .autocomplete-item-options.selected {
+    background-color: #d0eaff; /* light blue background */
+    color: #000; /* black text */
+  }
+
+  .autocomplete-dropdown-options {
+    position: absolute;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .autocomplete-item-options {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #1f2937;
+  }
+
+  .autocomplete-item-options:hover {
+    background-color: #f3f4f6;
+  }
 
 
   .custom-preview {
@@ -343,6 +378,95 @@
 
 <script src="https://cdn.jsdelivr.net/npm/string-similarity@4.0.4/index.min.js"></script>
 <script>
+
+
+
+  // Add this array with slash commands
+const slashCommands = [
+{
+  name: 'table',
+  description: 'Insert a table template',
+  markdown: `| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |\n`,
+},
+
+{
+  name: 'quoat',
+  description: 'Insert a table template',
+  markdown: `> `,
+},
+
+{
+  name: 'code',
+  description: 'Insert a code block',
+  markdown: "```python\n// Your code here\n```\n",
+},
+{
+  name: 'image',
+  description: 'Insert an image placeholder',
+  markdown: "![Alt text](image-url)\n",
+},
+{
+  name: 'link',
+  description: 'Insert a hyperlink',
+  markdown: "[Link text](https://)\n",
+},
+{
+  name: 'mermaid',
+  description: 'Insert a Mermaid diagram',
+  markdown: "```mermaid\ngraph TD;\n    A-->B;\n```\n",
+},
+
+
+
+{
+  name: 'mermaid-snakey',
+  description: 'A sankey diagram is a visualization used to depict a flow from one set of values to another.',
+  markdown: "```mermaid\nsankey-beta\n\n%% source,target,value\nElectricity grid,Over generation / exports,104.453\nElectricity grid,Heating and cooling - homes,113.726\nElectricity grid,H2 conversion,27.14\n```\n",
+},
+
+{
+  name: 'mermaid-packet',
+  description: 'A packet diagram is a visual representation used to illustrate the structure and contents of a network packet. Network packets are the fundamental units of data transferred over a network.',
+  markdown: '```mermaid\n---\ntitle: "TCP Packet"\n---\npacket-beta\n0-15: "Source Port"\n16-31: "Destination Port"\n32-63: "Sequence Number"\n64-95: "Acknowledgment Number"\n96-99: "Data Offset"\n100-105: "Reserved"\n106: "URG"\n107: "ACK"\n108: "PSH"\n109: "RST"\n110: "SYN"\n111: "FIN"\n112-127: "Window"\n128-143: "Checksum"\n144-159: "Urgent Pointer"\n160-191: "(Options and Padding)"\n192-255: "Data (variable length)"\n```\n',
+},
+
+{
+  name: 'mermaid-kanban',
+  description: 'A packet diagram is a visual representation used to illustrate the structure and contents of a network packet. Network packets are the fundamental units of data transferred over a network.',
+  markdown: "```mermaid\n---\nconfig:\n  kanban:\n    ticketBaseUrl: 'https://mermaidchart.atlassian.net/browse/#TICKET#'\n---\nkanban\n  Todo\n    [Create Documentation]\n    docs[Create Blog about the new diagram]\n  [In progress]\n    id6[Create renderer so that it works in all cases. We also add som extra text here for testing purposes. And some more just for the extra flare.]\n  id9[Ready for deploy]\n    id8[Design grammar]@{ assigned: 'knsv' }\n  id10[Ready for test]\n    id4[Create parsing tests]@{ ticket: MC-2038, assigned: 'K.Sveidqvist', priority: 'High' }\n    id66[last item]@{ priority: 'Very Low', assigned: 'knsv' }\n  id11[Done]\n    id5[define getData]\n    id2[Title of diagram is more than 100 chars when user duplicates diagram with 100 char]@{ ticket: MC-2036, priority: 'Very High'}\n    id3[Update DB function]@{ ticket: MC-2037, assigned: knsv, priority: 'High' }\n  id12[Can't reproduce]\n    id3[Weird flickering in Firefox]\n```",
+},
+
+
+{
+  name: 'mermaid-pie',
+  description: 'circular statistical graphic, which is divided into slices to illustrate numerical proportion.',
+  markdown: '```mermaid\n\npie title Pets adopted by volunteers\n  "Dogs" : 386\n  "Cats" : 85\n  "Rats" : 15\n```',
+},
+
+
+{
+  name: 'mermaid-mindmap',
+  description: 'used to visually organize information into a hierarchy, showing relationships among pieces of the whole.',
+  markdown: '```mermaid\n\nmindmap\nroot((mindmap))\n  Origins\n    Long history\n    ::icon(fa fa-book)\n    Popularisation\n      British popular psychology author Tony Buzan\n  Research\n    On effectiveness<br/>and features\n    On Automatic creation\n      Uses\n          Creative techniques\n          Strategic planning\n          Argument mapping\n  Tools\n    Pen and paper\n    Mermaid\n```',
+},
+
+
+{
+  name: 'mermaid-flowchart',
+  description: 'used to visually organize information into a hierarchy, showing relationships among pieces of the whole.',
+  markdown: '```mermaid\n\nflowchart TD\n  A[Start] --> B{Is it?}\n  B -- Yes --> C[OK]\n  C --> D[Rethink]\n  D --> B\n  B -- No ----> E[End]  \n```',
+},
+
+{
+  name: 'mermaid-timeline',
+  description: 'used to illustrate a chronology of events, dates, or periods of time.',
+  markdown: '```mermaid\n \ntimeline\n  title History of Social Media Platform\n  2002 : LinkedIn\n  2004 : Facebook\n       : Google\n  2005 : Youtube\n  2006 : Twitter\n```',
+},
+
+];
+
+
+
   // Initialize Highlight.js for code blocks
   hljs.highlightAll();
 
@@ -731,74 +855,84 @@
   // Autocomplete for @ mentions (unchanged)
   let autocompleteDropdown = null;
   let lastQuery = "";
-  function showAutocomplete(cm, triggerPosition) {
-    if (autocompleteDropdown) autocompleteDropdown.remove();
-    autocompleteDropdown = document.createElement("div");
-    autocompleteDropdown.className = "autocomplete-dropdown";
-    project_id = document.getElementById("projectId").value;
+// Rename existing showAutocomplete to showMentionAutocomplete
+function showMentionAutocomplete(cm, startPos, query) {
+  if (autocompleteDropdown) autocompleteDropdown.remove();
+  autocompleteDropdown = document.createElement("div");
+  autocompleteDropdown.className = "autocomplete-dropdown";
+  project_id = document.getElementById("projectId").value;
 
-    // Fetch items from the Django view
-    fetch(`/projects/${project_id}/autocomplete/items/`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((items) => {
-        // Map items to include a similarity score.
-        const scoredItems = items.map((item) => ({
-          ...item,
-          score: checkSimilarity(lastQuery, item.name),
-        }));
+  fetch(`/projects/${project_id}/autocomplete/items/`)
+    .then((response) => response.json())
+    .then((items) => {
+      const scoredItems = items.map((item) => ({
+        ...item,
+        score: checkSimilarity(query, item.name),
+      }));
+      const totalScore = scoredItems.reduce((sum, item) => sum + item.score, 0);
+      const averageScore = totalScore / scoredItems.length;
+      const aboveAverageItems = isNaN(averageScore)
+        ? scoredItems
+        : scoredItems.filter((item) => item.score > averageScore);
 
-        // Compute the average score.
-        const totalScore = scoredItems.reduce(
-          (sum, item) => sum + item.score,
-          0
+      aboveAverageItems.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "autocomplete-item";
+        div.innerHTML = item.name.replace(
+          new RegExp(query, "gi"),
+          (match) => `<span class="autocomplete-highlight">${match}</span>`
         );
-        const averageScore = totalScore / scoredItems.length;
-        console.log("Average score:", averageScore);
-
-        // If average score is NaN, return all items; otherwise filter.
-        const aboveAverageItems = isNaN(averageScore)
-          ? scoredItems
-          : scoredItems.filter((item) => item.score > averageScore);
-
-        // Create an element for each item above average
-        aboveAverageItems.forEach((item) => {
-          const div = document.createElement("div");
-          div.className = "autocomplete-item";
-          div.innerHTML = item.name.replace(
-            new RegExp(lastQuery, "gi"),
-            (match) => `<span class="autocomplete-highlight">${match}</span>`
-          );
-
-          // On click, insert the markdown link into CodeMirror
-          div.onclick = () => {
-            const markdown = `[${item.name} •](@user-chip:${item.slug})`;
-            cm.replaceRange(markdown, triggerPosition, cm.getCursor());
-            if (
-              autocompleteDropdown &&
-              document.body.contains(autocompleteDropdown)
-            ) {
-              document.body.removeChild(autocompleteDropdown);
-            }
-            autocompleteDropdown = null;
-          };
-          autocompleteDropdown.appendChild(div);
-        });
-
-        // Position and display the autocomplete dropdown.
-        const coords = cm.cursorCoords(cm.getCursor());
-        autocompleteDropdown.style.left = coords.left + "px";
-        autocompleteDropdown.style.top = coords.bottom + 5 + "px";
-        document.body.appendChild(autocompleteDropdown);
-      })
-      .catch((error) => {
-        console.error("Error fetching autocomplete items:", error);
+        div.onclick = () => {
+          const markdown = `[${item.name} •](@user-chip:${item.slug})`;
+          cm.replaceRange(markdown, startPos, cm.getCursor());
+          hideAutocomplete();
+        };
+        autocompleteDropdown.appendChild(div);
       });
-  }
+
+      const coords = cm.cursorCoords(cm.getCursor());
+      autocompleteDropdown.style.left = coords.left + "px";
+      autocompleteDropdown.style.top = coords.bottom + 5 + "px";
+      document.body.appendChild(autocompleteDropdown);
+    });
+}
+
+
+
+
+  // Add new function for slash commands
+function showSlashAutocomplete(cm, startPos, query) {
+  if (autocompleteDropdown) autocompleteDropdown.remove();
+  autocompleteDropdown = document.createElement("div");
+  autocompleteDropdown.className = "autocomplete-dropdown-options";
+
+  const filteredCommands = slashCommands
+    .filter(cmd => cmd.name.toLowerCase().includes(query.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  filteredCommands.forEach(cmd => {
+    const div = document.createElement("div");
+    div.className = "autocomplete-item-options";
+    div.innerHTML = `
+      <strong>${cmd.name}</strong>
+      <span style="color: #666; font-size: 0.9em;">${cmd.description}</span>
+    `;
+
+    div.onclick = () => {
+      cm.replaceRange(cmd.markdown, startPos, cm.getCursor());
+      hideAutocomplete();
+    };
+    autocompleteDropdown.appendChild(div);
+  });
+
+  const coords = cm.cursorCoords(cm.getCursor());
+  autocompleteDropdown.style.left = coords.left + "px";
+  autocompleteDropdown.style.top = coords.bottom + 5 + "px";
+  document.body.appendChild(autocompleteDropdown);
+}
+
+
+
   function hideAutocomplete() {
     if (autocompleteDropdown && document.body.contains(autocompleteDropdown)) {
       document.body.removeChild(autocompleteDropdown);
@@ -809,18 +943,46 @@
     const cursor = cm.getCursor();
     const line = cm.getLine(cursor.line);
     const textBefore = line.slice(0, cursor.ch);
-    const match = textBefore.match(/(^|\s)@(\w*)$/);
-    if (match) {
-      const startPos = match.index + match[1].length;
-      lastQuery = match[2];
-      showAutocomplete(cm, {
-        line: cursor.line,
-        ch: startPos,
-      });
-    } else {
-      hideAutocomplete();
+
+
+    let trigger = null;
+    let query = '';
+    let startPos = null;
+
+
+    // Check for @ mention
+  const atMatch = textBefore.match(/(^|\s)@(\w*)$/);
+  if (atMatch) {
+    trigger = '@';
+    query = atMatch[2];
+    startPos = {
+      line: cursor.line,
+      ch: atMatch.index + atMatch[1].length,
+    };
+  }
+
+  // Check for / command
+  const slashMatch = textBefore.match(/(\\)(\w*)$/); // Updated regex
+  if (!trigger && slashMatch) {
+    trigger = '\\';
+    query = slashMatch[2];
+    startPos = {
+      line: cursor.line,
+      ch: slashMatch.index,
+    };
+  }
+
+  if (trigger) {
+    if (trigger === '@') {
+      showMentionAutocomplete(cm, startPos, query);
+    } else if (trigger === '\\') {
+      showSlashAutocomplete(cm, startPos, query);
     }
-  });
+  } else {
+    hideAutocomplete();
+  }
+});
+
   document.addEventListener("click", (e) => {
     if (autocompleteDropdown && !autocompleteDropdown.contains(e.target)) {
       hideAutocomplete();
@@ -829,8 +991,21 @@
   easyMDE.codemirror.on("keydown", (cm, event) => {
     if (!autocompleteDropdown || !document.body.contains(autocompleteDropdown))
       return;
-    const items = autocompleteDropdown.querySelectorAll(".autocomplete-item");
-    if (items.length === 0) return;
+    const mention_items = autocompleteDropdown.querySelectorAll(".autocomplete-item");
+    const options_items = autocompleteDropdown.querySelectorAll(".autocomplete-item-options");
+    console.log(options_items);
+    var items;
+    if (mention_items.length === 0 && options_items.length === 0) return;
+    if (mention_items.length != 0 && options_items.length === 0) {
+      items = mention_items;
+    }
+    else if(mention_items.length === 0 && options_items.length != 0){
+      items = options_items;
+    }
+
+
+    console.log(event , cm);
+    
 
     let current = Array.from(items).findIndex((item) =>
       item.classList.contains("selected")
@@ -876,6 +1051,8 @@
       container.scrollTop = itemTop + itemHeight - containerHeight;
     }
   });
+
+  
   
 
 // Custom preview toggle logic
