@@ -173,14 +173,13 @@
     overflow: visible !important;
     background: white;
   }
-
   .custom-preview img {
-    width: 100%;
+    max-width: 100%;
     height: auto;
-    margin: 15px 0;
-    display: block;
+    margin: 15px auto !important;  /* Changed from 15px 0 to auto for horizontal centering */
+    display: block !important;
     border-radius: 8px !important;
-  }
+}
   
   /* Drag and drop styles */
   .drag-over {
@@ -207,7 +206,8 @@
     text-align: center;
   }
   .custom-preview th {
-    background-color: #f3f4f6;
+    background-color: #bf1e2e;
+    color: white;
     font-weight: bold;
   }
 </style>
