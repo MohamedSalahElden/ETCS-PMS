@@ -8,6 +8,9 @@
   rel="stylesheet"
 />
 
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 <!-- CodeMirror Core & Themes -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
@@ -27,6 +30,15 @@
 <!-- Mermaid -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <style>
+
+  .toastify {
+    font-size: 12px !important; /* Make text smaller */
+    padding: 8px 12px !important; /* Reduce padding */
+    border-radius: 20px !important; /* Round the corners */
+    min-width: auto !important; /* Remove unnecessary width */
+    max-width: 180px !important; /* Set a max width */
+    text-align: center;
+}
 
 
   // Add to your CSS
@@ -321,7 +333,9 @@
       
         <p style="margin-top: 15px;"><a href="#" class="alert-link" style="font-weight: bold; text-decoration: none;">📖 Learn More</a></p>
       </div>
-      
+      <input type="text" id="title" placeholder="Enter title..." 
+       value= "Untitled Writeup" style="width: 100%; font-size: 30px; font-weight: bold; outline: none; border: none; background: transparent; padding: 5px;">
+
       <input type="hidden" id="projectId" value="{{ project.id }}" />
       <form method="post" novalidate>
         {% csrf_token %} {% if form.errors %}
@@ -659,6 +673,9 @@ const slashCommands = [
     },
     imageUploadFunction: imageUploadFunction,
     fileUploadFunction: fileUploadFunction,
+    shortcuts: {
+      "save": "Ctrl-S", // Define the shortcut
+    },
   });
 
   // After each preview update, initialize Mermaid diagrams
@@ -1050,9 +1067,6 @@ function showSlashAutocomplete(cm, startPos, query) {
     }
   });
 
-  
-  
-
 // Custom preview toggle logic
 document.getElementById("smallButton").addEventListener("click", function () {
   const editor = easyMDE.codemirror;
@@ -1070,7 +1084,7 @@ document.getElementById("smallButton").addEventListener("click", function () {
     // Update button state
     this.style.backgroundColor = "#bf1e2e";
     this.style.color = "#fff";
-    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>'; // Eye icon
+    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="30"  height="30"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>'; // Eye icon
     
     // Render Mermaid diagrams
     forceMermaidRender();
@@ -1082,7 +1096,7 @@ document.getElementById("smallButton").addEventListener("click", function () {
     // Update button state
     this.style.backgroundColor = "#ffffff";
     this.style.color = "#000";
-    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'; // Edit icon
+    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="30"  height="30"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'; // Edit icon
     
     // Refresh editor
     editor.refresh();
@@ -1104,6 +1118,71 @@ easyMDE.codemirror.on("change", function() {
   }
 });
 
+
+
+// Add event listener to handle Ctrl+S
+document.addEventListener("keydown", function(event) {
+  if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+      event.preventDefault(); // Prevent browser save
+      saveContent(); // Call your save function
+  }
+});
+
+
+// Function to save the content
+function saveContent() {
+  var content = easyMDE.value(); // Get Markdown content
+  var title = document.getElementById("title").value; // Assuming there's an input field for the title
+  var projectId = document.getElementById("projectId").value; // Assuming there's a hidden input field for the project ID
+
+  // Construct form data
+  var formData = new FormData();
+  formData.append("title", title);
+  formData.append("content", content);
+  console.log(content)
+  formData.append("project", projectId);
+
+  // Send data via Fetch API
+  fetch(`/projects/${projectId}/writeups/create/`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+    },
+    body: JSON.stringify({ title: title, content: content }),
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+      Toastify({
+        text: "Saved successfully!",
+        duration: 3000, // 3 seconds
+        gravity: "top", // "top" or "bottom"
+        position: "center", // "left", "center", or "right"
+        backgroundColor: "linear-gradient(to right, #4CAF50, #66BB6A)", // Green success color
+        stopOnFocus: true, // Prevents dismissing on hover
+    }).showToast();
+    
+    } else {
+        alert("Error: " + data.error);
+    }
+})
+.catch(error => console.error("Error:", error));
+}
+
+// Function to get CSRF token from cookies
+function getCSRFToken() {
+  let cookieValue = null;
+  let cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.startsWith("csrftoken=")) {
+          cookieValue = cookie.substring("csrftoken=".length, cookie.length);
+          break;
+      }
+  }
+  return cookieValue;
+}
 
 
   

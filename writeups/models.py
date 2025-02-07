@@ -19,7 +19,7 @@ class Writeup(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='writeups_created')
     editors = models.ManyToManyField(User, related_name='writeups_edited', blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='writeups')
-    tasks = models.ManyToManyField(Task, related_name='writeups', blank=True)
+    # tasks = models.ManyToManyField(Task, related_name='writeups', blank=True)
     evidence_files = models.ManyToManyField(File, related_name='writeups', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

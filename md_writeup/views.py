@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
+from flask import json
 from .models import MarkdownContent
 from .forms import ImageUploadForm , FileUploadForm, MarkdownContentForm
 import markdown
@@ -14,80 +15,50 @@ def writeup_list(request, project_id):
 
 
 
+
 def create_content(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+
     if request.method == 'POST':
+        # 🔹 Check if it's an AJAX request (JSON-based)
+        if request.headers.get('Content-Type') == 'application/json':
+            try:
+                data = json.loads(request.body)  # ✅ Correct way to read JSON data
+            except json.JSONDecodeError:
+                return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
+
+            content = data.get("content", "").strip()
+            title = data.get("title", "").strip()
+
+            # 🔹 Validate empty content
+            if not content:
+                return JsonResponse({"success": False, "error": "Content cannot be empty"}, status=400)
+
+            # 🔹 Save the markdown content
+            markdown_content = MarkdownContent.objects.create(
+                title=title,
+                content=content,
+                project=project,
+                creator=request.user,
+            )
+
+            return JsonResponse({"success": True, "id": markdown_content.id})
+
+        # 🔹 If not JSON, handle standard form submission
         form = MarkdownContentForm(request.POST)
         if form.is_valid():
-            # Add manual validation
-            content = form.cleaned_data.get('content')
-            if not content or content.strip() == '':
-                form.add_error('content', 'Content cannot be empty')
-                return render(request, 'editor/editor.html', {'form': form})
-            
-            form.save()
-            print(form.instance.id)
-            return render(request, 'editor/success.html')
-    else:
-        form = MarkdownContentForm()
+            markdown_content = form.save(commit=False)
+            markdown_content.project = project
+            markdown_content.creator = request.user
+            markdown_content.save()
+            return JsonResponse({"success": True, "id": markdown_content.id})
 
-    initial_text = '''
+        return JsonResponse({"success": False, "error": "Invalid form data"}, status=400)
 
-# Embedded Cybersecurity: Protecting the Core of IoT Systems
+    # 🔹 If GET request, render the form
+    form = MarkdownContentForm()
+    initial_text = '''\n# Embedded Cybersecurity: Protecting the Core of IoT Systems\n[task: Firmware Analysis •](@user-chip:/users/firmware-analysis)\n## Introduction\nEmbedded systems are the backbone of many modern technologies, ranging from **IoT devices** to **critical infrastructure**. These systems are often deployed in sensitive environments where security breaches can lead to significant consequences. In this document, we'll explore the importance of embedded cybersecurity and the measures that can be taken to protect these systems.\n> **"Embedded systems are everywhere – from medical devices to industrial machines. Securing these devices is crucial to ensuring the safety of the modern world."** – Cybersecurity Expert\n## Why Embedded Cybersecurity is Important\n### The Role of Embedded Systems in Cybersecurity\nEmbedded systems are **purpose-built** systems designed to perform specific tasks. They control everything from household appliances to high-performance military equipment. As these devices become interconnected through networks, they become increasingly vulnerable to cyberattacks.\n#### Key Security Risks in Embedded Systems:\n| Risk Type          | Description                                                            | Example                            |\n|--------------------|------------------------------------------------------------------------|------------------------------------|\n| **Physical Attacks**| Malicious actors gaining physical access to the system.                | Fault Injection Attacks            |\n| **Side-channel Attacks**| Exploiting the physical characteristics of a device during operation. | Power Analysis Attacks             |\n| **Software Vulnerabilities**| Exploits in the firmware or OS running on the device.           | Buffer Overflow in Firmware        |\n| **Network-based Attacks**| Targeting the device through communication interfaces.          | Man-in-the-Middle (MITM) Attacks   |\n### Common Threats to Embedded Systems\n1. **Firmware Exploits**: Many embedded devices run custom firmware. Attackers may target these vulnerabilities to compromise the device.\n2. **Supply Chain Attacks**: Malicious components or firmware could be introduced during manufacturing.\n3. **Unauthorized Access**: Weak authentication and encryption mechanisms leave devices open to unauthorized control.\n### Security Measures for Embedded Systems\n#### 1. **Secure Boot Process**\nThe **Secure Boot** process ensures that only trusted firmware is loaded during the device startup. This prevents attackers from replacing the device's firmware with malicious versions.\n```c\n// C code example for implementing a basic secure boot\nif (verify_firmware_signature(firmware)) {\n    load_firmware(firmware);\n} else {\n    // Stop booting if the firmware is tampered\n    halt_device();\n}\n```\n![default_wallpaper.png](/media/project_files/default_wallpaper_egogbC8.png)\n'''
 
-
-[task: Firmware Analysis •](@user-chip:/users/firmware-analysis)
-
-## Introduction
-
-Embedded systems are the backbone of many modern technologies, ranging from **IoT devices** to **critical infrastructure**. These systems are often deployed in sensitive environments where security breaches can lead to significant consequences. In this document, we'll explore the importance of embedded cybersecurity and the measures that can be taken to protect these systems.
-
-
-
-
-> **"Embedded systems are everywhere – from medical devices to industrial machines. Securing these devices is crucial to ensuring the safety of the modern world."** – Cybersecurity Expert
-
-## Why Embedded Cybersecurity is Important
-
-### The Role of Embedded Systems in Cybersecurity
-
-Embedded systems are **purpose-built** systems designed to perform specific tasks. They control everything from household appliances to high-performance military equipment. As these devices become interconnected through networks, they become increasingly vulnerable to cyberattacks.
-
-#### Key Security Risks in Embedded Systems:
-
-| Risk Type          | Description                                                            | Example                            |
-|--------------------|------------------------------------------------------------------------|------------------------------------|
-| **Physical Attacks**| Malicious actors gaining physical access to the system.                | Fault Injection Attacks            |
-| **Side-channel Attacks**| Exploiting the physical characteristics of a device during operation. | Power Analysis Attacks             |
-| **Software Vulnerabilities**| Exploits in the firmware or OS running on the device.           | Buffer Overflow in Firmware        |
-| **Network-based Attacks**| Targeting the device through communication interfaces.          | Man-in-the-Middle (MITM) Attacks   |
-
-### Common Threats to Embedded Systems
-
-1. **Firmware Exploits**: Many embedded devices run custom firmware. Attackers may target these vulnerabilities to compromise the device.
-2. **Supply Chain Attacks**: Malicious components or firmware could be introduced during manufacturing.
-3. **Unauthorized Access**: Weak authentication and encryption mechanisms leave devices open to unauthorized control.
-
-### Security Measures for Embedded Systems
-
-#### 1. **Secure Boot Process**
-
-The **Secure Boot** process ensures that only trusted firmware is loaded during the device startup. This prevents attackers from replacing the device's firmware with malicious versions.
-
-```c
-// C code example for implementing a basic secure boot
-if (verify_firmware_signature(firmware)) {
-    load_firmware(firmware);
-} else {
-    // Stop booting if the firmware is tampered
-    halt_device();
-}
-```
-
-![default_wallpaper.png](/media/project_files/default_wallpaper_egogbC8.png)
-
-
-'''
     return render(request, 'editor/editor.html', {'form': form, 'project': project, 'initial_text': initial_text})
 
 def view_content(request, pk):
