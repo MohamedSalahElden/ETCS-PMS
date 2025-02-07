@@ -306,6 +306,22 @@
 <div class="container-fluid">
   <div class="content-wrapper">
     <div class="container-fluid">
+      <div id="alter-info" class="alert alert-primary" role="alert" style="font-family: Arial, sans-serif; padding: 20px; border-radius: 8px;">
+        <h4 style="font-weight: bold; margin-bottom: 10px;">📌 Markdown Guide</h4>
+        <p style="margin-bottom: 15px;">Use Markdown to format text, create tables, write code, and more. Here are the key features:</p>
+      
+        <ul style="padding-left: 20px; list-style-type: none;">
+          <li>✅ <strong>Tables:</strong> Organize data in columns and rows.</li>
+          <li>💻 <strong>Code Blocks:</strong> Use backticks for inline and triple backticks for multi-line code.</li>
+          <li>🔠 <strong>Bold & Italic:</strong> Use asterisks or underscores for emphasis.</li>
+          <li>📊 <strong>Mermaid Graphs:</strong> Create diagrams like flowcharts and sequence diagrams.</li>
+          <li>📌 <strong>Mentions:</strong> Use <strong><code>@</code></strong> to reference tasks, files, issues, or users.</li>
+          <li>⚡ <strong>Pre-made Elements:</strong> Type <strong><code>\</code></strong> to insert code, charts, or other Markdown elements.</li>
+        </ul>
+      
+        <p style="margin-top: 15px;"><a href="#" class="alert-link" style="font-weight: bold; text-decoration: none;">📖 Learn More</a></p>
+      </div>
+      
       <input type="hidden" id="projectId" value="{{ project.id }}" />
       <form method="post" novalidate>
         {% csrf_token %} {% if form.errors %}
@@ -322,27 +338,9 @@
   <button
     id="smallButton"
     class="btn"
-    style="border: 2px solid #bf1e2e; color: #000; backgroundcolor: #ffffff"
+    style="border: 2px solid #bf1e2e; color: #000; background:rgb(223, 223, 223)"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-      <path
-        d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"
-      />
-      <path d="M16 5l3 3" />
-    </svg>
+  <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
   </button>
   <button id="floatingButton" class="btn btn-primary">
     <svg
@@ -1059,12 +1057,12 @@ function showSlashAutocomplete(cm, startPos, query) {
 document.getElementById("smallButton").addEventListener("click", function () {
   const editor = easyMDE.codemirror;
   const previewDiv = document.getElementById("customPreview");
-
+  document.getElementById("alter-info").style.display = 'none';
   if (previewDiv.style.display === "none") {
     // Show custom preview
     previewDiv.style.display = "block";
     editor.getWrapperElement().style.display = "none";
-    
+    document.getElementById("alter-info").style.display = 'none';
     // Render markdown to preview div
     const markdownContent = editor.getValue();
     previewDiv.innerHTML = easyMDE.options.previewRender(markdownContent);
@@ -1072,7 +1070,7 @@ document.getElementById("smallButton").addEventListener("click", function () {
     // Update button state
     this.style.backgroundColor = "#bf1e2e";
     this.style.color = "#fff";
-    this.innerHTML = '<svg ...>'; // Eye icon
+    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>'; // Eye icon
     
     // Render Mermaid diagrams
     forceMermaidRender();
@@ -1080,11 +1078,11 @@ document.getElementById("smallButton").addEventListener("click", function () {
     // Show editor
     previewDiv.style.display = "none";
     editor.getWrapperElement().style.display = "block";
-    
+    document.getElementById("alter-info").style.display = 'block';
     // Update button state
     this.style.backgroundColor = "#ffffff";
     this.style.color = "#000";
-    this.innerHTML = '<svg ...>'; // Edit icon
+    this.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'; // Edit icon
     
     // Refresh editor
     editor.refresh();
